@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to security hardening for home labs. Fail2ban, SSH keys only, 2FA on everything, regular updates, minimal attack surface.">
+    <title>Security Hardening - HomeLab Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="../index.html" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 17h8M12 17v-5"/>
+                </svg>
+                <span>HomeLab Guide</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <ul class="nav-links">
+                <li><a href="../index.html#guides">Guides</a></li>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../index.html#hardware">Hardware</a></li>
+                <li><a href="../index.html#networking">Networking</a></li>
+                <li><a href="../index.html#resources">Resources</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="guide-page">
+        <article class="guide-content container">
+            <header class="guide-header">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="../index.html">Home</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <a href="../index.html#guides">Guides</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <span aria-current="page">Security Hardening</span>
+                </nav>
+                <h1>Security Hardening</h1>
+                <p class="guide-description">Fail2ban, SSH keys only, 2FA on everything, regular updates, minimal attack surface. Defense in depth for your home lab.</p>
+                <div class="guide-meta">
+                    <span class="guide-difficulty intermediate">Intermediate</span>
+                    <span class="guide-time">~30 min read</span>
+                    <span class="guide-updated">Updated 2026</span>
+                </div>
+            </header>
+
+            <section id="security-principles">
+                <h2>Security Principles</h2>
+                <div class="reasons-grid">
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <h3>Defense in Depth</h3>
+                        <p>Multiple layers: network, host, application, data. No single point of failure.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <h3>Least Privilege</h3>
+                        <p>Users/services get minimum access needed. No root where not required.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 17h8M12 17v-5"/></svg>
+                        </div>
+                        <h3>Minimal Attack Surface</h3>
+                        <p>Disable unused services, close unused ports, uninstall unneeded packages.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        <h3>Assume Breach</h3>
+                        <p>Design for detection and containment. Logging, monitoring, incident response ready.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="ssh-hardening">
+                <h2>SSH Hardening</h2>
+
+                <h3>/etc/ssh/sshd_config</h3>
+                <pre><code class="language-text"># Network
+Port 22
+AddressFamily any
+ListenAddress 0.0.0.0
+ListenAddress ::
+
+# Authentication
+PermitRootLogin no
+PubkeyAuthentication yes
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+ChallengeResponseAuthentication no
+UsePAM yes
+
+# Key types (modern only)
+PubkeyAcceptedKeyTypes ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521
+HostKeyAlgorithms ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521
+
+# Ciphers & MACs (modern only)
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,umac-128-etm@openssh.com
+KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256
+
+# Security
+MaxAuthTries 3
+MaxSessions 2
+LoginGraceTime 30
+ClientAliveInterval 300
+ClientAliveCountMax 2
+PermitEmptyPasswords no
+PermitUserEnvironment no
+AllowAgentForwarding no
+AllowTcpForwarding no
+X11Forwarding no
+PrintMotd no
+Banner /etc/ssh/banner
+
+# Logging
+SyslogFacility AUTH
+LogLevel VERBOSE
+
+# Access control (adjust for your network)
+AllowUsers admin@10.10.10.0/24 admin@10.10.50.0/24
+# Or use AllowGroups sshusers</code></pre>
+
+                <h3>Generate Ed25519 Keys</h3>
+                <pre><code class="language-bash"># On client machine
+ssh-keygen -t ed25519 -a 100 -C "your-email@domain.com"
+# -a 100 = 100 KDF rounds (more secure)
+
+# Copy to server
+ssh-copy-id -i ~/.ssh/id_ed25519.pub user@server
+
+# Test
+ssh -o PreferredAuthentications=publickey user@server</code></pre>
+
+                <h3>SSH Certificate Authority (Advanced)</h3>
+                <pre><code class="language-bash"># Generate CA key
+ssh-keygen -t ed25519 -f ssh_ca -C "home-lab-ca"
+
+# Sign user keys (valid 1 day)
+ssh-keygen -s ssh_ca -I "user@laptop" -n admin -V +1d ~/.ssh/id_ed25519.pub
+
+# Server config: TrustedUserCAKeys /etc/ssh/ssh_ca.pub
+# Client config: CertificateFile ~/.ssh/id_ed25519-cert.pub</code></pre>
+            </section>
+
+            <section id="2fa">
+                <h2>Two-Factor Authentication (2FA)</h2>
+
+                <h3>SSH with TOTP</h3>
+                <pre><code class="language-bash"># Install
+sudo apt install libpam-google-authenticator
+
+# Configure per user
+google-authenticator
+# Answer: y, y, y, n, y (time-based, disallow reuse, rate limit)
+
+# /etc/pam.d/sshd - add at TOP
+auth required pam_google_authenticator.so nullok
+
+# /etc/ssh/sshd_config
+AuthenticationMethods publickey,keyboard-interactive
+ChallengeResponseAuthentication yes
+UsePAM yes</code></pre>
+
+                <h3>2FA for Web Services</h3>
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>2FA Method</th>
+                                <th>Setup</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Authentik</td>
+                                <td>TOTP, WebAuthn, Email, SMS, Duo</td>
+                                <td>Flows → Add Authenticator Validation stage</td>
+                            </tr>
+                            <tr>
+                                <td>Home Assistant</td>
+                                <td>TOTP (built-in)</td>
+                                <td>Profile → Enable MFA</td>
+                            </tr>
+                            <tr>
+                                <td>Nextcloud</td>
+                                <td>TOTP, WebAuthn, U2F</td>
+                                <td>Settings → Security → 2FA</td>
+                            </tr>
+                            <tr>
+                                <td>Portainer</td>
+                                <td>OIDC/LDAP (via Authentik)</td>
+                                <td>Settings → Authentication</td>
+                            </tr>
+                            <tr>
+                                <td>Grafana</td>
+                                <td>OIDC (via Authentik)</td>
+                                <td>Configure generic_oauth with Authentik</td>
+                            </tr>
+                            <tr>
+                                <td>Uptime Kuma</td>
+                                <td>TOTP (built-in)</td>
+                                <td>Settings → Account → Enable 2FA</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Hardware Keys (WebAuthn / FIDO2)</h3>
+                <ul class="feature-list">
+                    <li>YubiKey, SoloKey, Nitrokey, Apple TouchID, Windows Hello</li>
+                    <li>Phishing-resistant - domain bound</li>
+                    <li>Register multiple keys (backup)</li>
+                    <li>Authentik: Settings → Authenticator Types → Enable WebAuthn</li>
+                </ul>
+            </section>
+
+            <section id="intrusion-prevention">
+                <h2>Intrusion Prevention (Fail2ban / CrowdSec)</h2>
+
+                <h3>Fail2ban (Traditional)</h3>
+                <pre><code class="language-bash"># Install
+sudo apt install fail2ban
+
+# /etc/fail2ban/jail.local
+[DEFAULT]
+bantime = 1h
+findtime = 10m
+maxretry = 3
+backend = systemd
+banaction = ufw
+ignoreip = 127.0.0.1/8 10.10.10.0/24 10.10.50.0/24
+
+[sshd]
+enabled = true
+port = ssh
+filter = sshd
+logpath = %(sshd_log)s
+maxretry = 3
+
+[nginx-http-auth]
+enabled = true
+filter = nginx-http-auth
+port = http,https
+logpath = /var/log/nginx/error.log
+
+[nginx-botsearch]
+enabled = true
+filter = nginx-botsearch
+port = http,https
+logpath = /var/log/nginx/access.log
+maxretry = 2
+
+[docker]
+enabled = true
+filter = docker
+port = 2376,2375
+logpath = /var/log/docker.log</code></pre>
+
+                <h3>Custom Filters</h3>
+                <pre><code class="language-text"># /etc/fail2ban/filter.d/nginx-404.conf
+[Definition]
+failregex = ^<HOST> -.*"(GET|POST).*HTTP.*" 404
+ignoreregex =
+
+# /etc/fail2ban/filter.d/traefik-auth.conf
+[Definition]
+failregex = ^.*"remote_addr":"<HOST>".*"status":401.*
+ignoreregex =</code></pre>
+
+                <h3>CrowdSec (Modern, Collaborative)</h3>
+                <p>See <a href="firewall.html#crowdsec">Firewall Rules → CrowdSec</a> for deployment.</p>
+                <ul class="feature-list">
+                    <li>Community blocklists - global threat intelligence</li>
+                    <li>Behavioral analysis, not just regex</li>
+                    <li>Multiple bouncers: firewall, nginx, traefik, cloudflare</li>
+                    <li>Dashboard: <code>cscli dashboard</code> or Metabase</li>
+                </ul>
+            </section>
+
+            <section id="updates">
+                <h2>Automated Updates</h2>
+
+                <h3>OS Package Updates</h3>
+                <pre><code class="language-bash"># Ubuntu/Debian - unattended-upgrades
+sudo apt install unattended-upgrades apt-listchanges
+
+# /etc/apt/apt.conf.d/50unattended-upgrades
+Unattended-Upgrade::Allowed-Origins {
+    "${distro_id}:${distro_codename}-security";
+    "${distro_id}:${distro_codename}-updates";
+    "${distro_id}ESMApps:${distro_codename}-apps-security";
+    "${distro_id}ESM:${distro_codename}-infra-security";
+};
+Unattended-Upgrade::AutoFixInterruptedDpkg "true";
+Unattended-Upgrade::MinimalSteps "true";
+Unattended-Upgrade::Remove-Unused-Dependencies "true";
+Unattended-Upgrade::Automatic-Reboot "true";
+Unattended-Upgrade::Automatic-Reboot-Time "03:00";
+
+# /etc/apt/apt.conf.d/20auto-upgrades
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Download-Upgradeable-Packages "1";
+APT::Periodic::AutocleanInterval "7";
+APT::Periodic::Unattended-Upgrade "1";</code></pre>
+
+                <h3>Docker Image Updates</h3>
+                <pre><code class="language-yaml"># Watchtower - auto-update containers
+version: '3.8'
+services:
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_SCHEDULE=0 0 4 * * *  # Daily 4 AM
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_RESTARTING=true
+      - WATCHTOWER_LABEL_ENABLE=true  # Only update labeled containers
+      - WATCHTOWER_NOTIFICATION_EMAIL_FROM=watchtower@home.arpa
+      - WATCHTOWER_NOTIFICATION_EMAIL_TO=admin@home.arpa
+      - WATCHTOWER_NOTIFICATION_EMAIL_SERVER=smtp.home.arpa
+      - WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PORT=587
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+
+networks:
+  homelab:
+    external: true</code></pre>
+
+                <h3>Security Scanning</h3>
+                <pre><code class="language-bash"># Trivy - vulnerability scanner
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+  aquasec/trivy:latest image --severity HIGH,CRITICAL jellyfin/jellyfin:latest
+
+# Scan all local images
+trivy image --severity HIGH,CRITICAL $(docker images -q)
+
+# Grype (alternative)
+grype docker:jellyfin/jellyfin:latest</code></pre>
+            </section>
+
+            <section id="secrets">
+                <h2>Secrets Management</h2>
+
+                <h3>Docker Secrets</h3>
+                <pre><code class="language-bash"># Create secrets
+echo "supersecret" | docker secret create db_password -
+printf "your-token" | docker secret create api_token -
+
+# In compose
+services:
+  app:
+    image: myapp
+    secrets:
+      - db_password
+      - api_token
+    environment:
+      - DB_PASSWORD_FILE=/run/secrets/db_password
+
+secrets:
+  db_password:
+    external: true
+  api_token:
+    external: true</code></pre>
+
+                <h3>SOPS + Age (Encrypted Config Files)</h3>
+                <pre><code class="language-bash"># Install
+# sops + age (age-keygen - generates key.txt)
+
+# Encrypt file
+sops --encrypt --age age1... secrets.yaml > secrets.enc.yaml
+
+# Decrypt
+sops --decrypt secrets.enc.yaml > secrets.yaml
+
+# Use with git - commit encrypted, decrypt at deploy
+# .sops.yaml config for key management</code></pre>
+
+                <h3>Bitwarden / Vaultwarden (Self-hosted)</h3>
+                <pre><code class="language-yaml">version: '3.8'
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - vaultwarden-data:/data
+    environment:
+      - SIGNUPS_ALLOWED=false
+      - INVITATIONS_ALLOWED=true
+      - ADMIN_TOKEN=<strong-random-token>
+      - LOG_LEVEL=warn
+    ports:
+      - "8080:80"
+
+networks:
+  homelab:
+    external: true
+
+volumes:
+  vaultwarden-data:</code></pre>
+            </section>
+
+            <section id="network-security">
+                <h2>Network Security</h2>
+
+                <h3>WireGuard VPN (Secure Remote Access)</h3>
+                <pre><code class="language-yaml"># wg-easy (Web UI for WireGuard)
+version: '3.8'
+services:
+  wg-easy:
+    image: ghcr.io/wg-easy/wg-easy:latest
+    container_name: wg-easy
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - wg-easy-data:/etc/wireguard
+    ports:
+      - "51820:51820/udp"
+      - "51821:51821/tcp"
+    environment:
+      - WG_HOST=your-domain.com
+      - PASSWORD=<strong-admin-password>
+      - WG_DEFAULT_DNS=10.10.10.5  # AdGuard
+      - WG_MTU=1420
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv4.ip_forward=1
+
+networks:
+  homelab:
+    external: true
+
+volumes:
+  wg-easy-data:</code></pre>
+
+                <h3>Tailscale (Zero-Config Mesh)</h3>
+                <pre><code class="language-bash"># Install on each node
+curl -fsSL https://tailscale.com/install.sh | sh
+
+# Authenticate
+sudo tailscale up --ssh --advertise-routes=10.10.0.0/16
+
+# On exit node (gateway)
+sudo tailscale up --advertise-exit-node
+
+# ACLs (admin console) - restrict access
+# tag:server -> allow 10.10.10.0/24, 10.10.20.0/24
+# tag:admin -> allow *
+# group:family -> allow 10.10.20.0/24 only</code></pre>
+
+                <h3>mTLS with Step-CA (Service-to-Service)</h3>
+                <pre><code class="language-bash"># Smallstep CA for internal mTLS
+# Initialize
+step ca init --name="Home Lab CA" --dns=ca.home.arpa --address=:443 --provisioner=admin
+
+# Issue cert for service
+step ca certificate "jellyfin.home.arpa" jellyfin.crt jellyfin.key \
+  --provisioner=admin --not-after=8760h
+
+# Configure services to use certs
+# Traefik, Nginx, etc. can auto-renew via step-ca ACME</code></pre>
+            </section>
+
+            <section id="audit">
+                <h2>Audit & Compliance</h2>
+
+                <h3>Lynis (System Auditing)</h3>
+                <pre><code class="language-bash"># Run audit
+docker run --rm --pid=host --cap-add=CAP_DAC_READ_SEARCH \
+  -v /:/host:ro cisagov/lynis:latest audit system --quick
+
+# Or install locally
+sudo apt install lynis
+sudo lynis audit system --cronjob</code></pre>
+
+                <h3>OpenSCAP (Compliance)</h3>
+                <pre><code class="language-bash"># Install
+sudo apt install libopenscap8 scap-security-guide
+
+# Scan with CIS benchmark
+oscap xccdf eval --profile xccdf_org.ssgproject.content_profile_cis \
+  --results results.xml /usr/share/xml/scap/ssg/content/ssg-ubuntu2204-ds.xml
+
+# Generate HTML report
+oscap xccdf generate report results.xml > report.html</code></pre>
+
+                <h3>Docker Bench Security</h3>
+                <pre><code class="language-bash">docker run --rm --net host --pid host --userns host \
+  --cap-add=CAP_DAC_READ_SEARCH \
+  -v /etc:/etc:ro -v /var/lib:/var/lib:ro \
+  -v /usr/lib/systemd:/usr/lib/systemd:ro \
+  docker/docker-bench-security</code></pre>
+            </section>
+
+            <section id="incident-response">
+                <h2>Incident Response Preparation</h2>
+
+                <h3>Backup Verification</h3>
+                <pre><code class="language-bash"># Monthly restore test
+#!/bin/bash
+# test-restore.sh
+set -euo pipefail
+BACKUP_DIR="/mnt/backups"
+TEST_DIR="/tmp/restore-test-$(date +%s)"
+
+# Test each service backup
+for service in jellyfin nextcloud homeassistant; do
+    latest=$(ls -t $BACKUP_DIR/${service}_*.tar.gz | head -1)
+    echo "Testing $latest"
+    mkdir -p $TEST_DIR/$service
+    tar xzf $latest -C $TEST_DIR/$service
+    # Verify key files exist
+    [ -f $TEST_DIR/$service/config.yaml ] || exit 1
+done
+echo "All backups verified"
+rm -rf $TEST_DIR</code></pre>
+
+                <h3>Log Retention & Analysis</h3>
+                <ul class="feature-list">
+                    <li>Centralized logging: Loki + Promtail, or Elastic Stack</li>
+                    <li>Retain security logs 1 year minimum</li>
+                    <li>Alert on: failed logins, privilege escalation, config changes, new services</li>
+                    <li>Correlate: CrowdSec decisions + firewall blocks + auth logs</li>
+                </ul>
+
+                <h3>Incident Runbook Template</h3>
+                <pre><code class="language-markdown"># Incident: [Title]
+## Detection
+- Time detected:
+- Detection method: (alert, user report, log review)
+- Affected systems:
+
+## Assessment
+- Severity: Critical / High / Medium / Low
+- Attack vector:
+- Data exposed:
+
+## Containment
+- Actions taken:
+- Systems isolated:
+- Evidence preserved:
+
+## Eradication
+- Root cause:
+- Remediation steps:
+- Verification:
+
+## Recovery
+- Systems restored:
+- Monitoring enhanced:
+- Lessons learned:</code></pre>
+            </section>
+
+            <section id="checklist">
+                <h2>Hardening Checklist</h2>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <h4>Network</h4>
+                        <ul>
+                            <li>☐ VLANs segmented with firewall rules</li>
+                            <li>☐ Default deny inbound on all interfaces</li>
+                            <li>☐ VPN for all remote access</li>
+                            <li>☐ No direct port forwards to services</li>
+                            <li>☐ GeoIP blocking on edge</li>
+                            <li>☐ mDNS/SSDP blocked between VLANs</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Host</h4>
+                        <ul>
+                            <li>☐ SSH: keys only, no passwords, no root</li>
+                            <li>☐ 2FA on SSH (TOTP or FIDO2)</li>
+                            <li>☐ UFW/nftables enabled, default deny</li>
+                            <li>☐ Unattended security updates enabled</li>
+                            <li>☐ Fail2ban/CrowdSec running</li>
+                            <li>☐ Auditd for critical file changes</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Services</h4>
+                        <ul>
+                            <li>☐ All services behind reverse proxy</li>
+                            <li>☐ Authentik SSO + 2FA for all apps</li>
+                            <li>☐ No default passwords anywhere</li>
+                            <li>☐ Containers run as non-root</li>
+                            <li>☐ Read-only root filesystem where possible</li>
+                            <li>☐ Resource limits on all containers</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Data & Secrets</h4>
+                        <ul>
+                            <li>☐ Encrypted backups, tested monthly</li>
+                            <li>☐ Secrets in Docker secrets / SOPS / Vaultwarden</li>
+                            <li>☐ No secrets in git / Docker images</li>
+                            <li>☐ TLS everywhere (internal + external)</li>
+                            <li>☐ Certificate monitoring (expiry alerts)</li>
+                            <li>☐ Key rotation schedule documented</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Monitoring</h4>
+                        <ul>
+                            <li>☐ Uptime Kuma monitoring all services</li>
+                            <li>☐ Log aggregation (Loki/ELK)</li>
+                            <li>☐ Alerting on anomalies</li>
+                            <li>☐ Weekly log review</li>
+                            <li>☐ Vulnerability scanning (Trivy) weekly</li>
+                            <li>☐ Lynis audit monthly</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Operations</h4>
+                        <ul>
+                            <li>☐ Documented incident response plan</li>
+                            <li>☐ Offline backup of configs/secrets</li>
+                            <li>☐ Console/serial access to all hosts</li>
+                            <li>☐ Change management for firewall rules</li>
+                            <li>☐ Quarterly security review</li>
+                            <li>☐ Threat model updated annually</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="troubleshooting-sec">
+                <h2>Troubleshooting</h2>
+                <div class="troubleshooting-grid">
+                    <div class="issue-card">
+                        <h4>Locked out after SSH hardening</h4>
+                        <pre><code class="language-bash"># Console/serial access required
+# Check sshd config syntax
+sshd -t
+
+# Check logs
+journalctl -u ssh -f
+
+# Temporarily allow password from console
+# sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+# systemctl reload ssh</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>2FA not working</h4>
+                        <pre><code class="language-bash"># Check time sync (critical for TOTP)
+timedatectl status
+# Install chrony/ntpd if drifting
+
+# Verify PAM config
+# /etc/pam.d/sshd - google-authenticator line at TOP
+# Check sshd_config: ChallengeResponseAuthentication yes</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Fail2ban not banning</h4>
+                        <pre><code class="language-bash"># Check filter matches
+fail2ban-regex /var/log/auth.log /etc/fail2ban/filter.d/sshd.conf
+
+# Check jail status
+fail2ban-client status sshd
+
+# Verify backend (systemd vs pyinotify)
+# Check ignoreip not matching attacker</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Container escaping / privilege escalation</h4>
+                        <pre><code class="language-bash"># Check for privileged containers
+docker ps --filter "status=running" --format "{{.Names}}: {{.HostConfig.Privileged}}"
+
+# Check capabilities
+docker inspect container | grep -A 20 CapAdd
+
+# Run security scan
+trivy image --severity HIGH,CRITICAL image:name</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Certificate expired</h4>
+                        <pre><code class="language-bash"># Check all certs
+find /etc -name "*.crt" -o -name "*.pem" | xargs -I {} \
+  openssl x509 -in {} -noout -text | grep -E "Subject:|Not After"
+
+# Automate with certbot / step-ca / Traefik ACME
+# Alert 30 days before expiry (Uptime Kuma can monitor)</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="guide-navigation">
+                <a href="../index.html#guides" class="btn btn-secondary">← Back to Guides</a>
+                <a href="vlans.html" class="btn btn-primary">← Back to Networking: VLANs</a>
+            </nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <path d="M8 17h8M12 17v-5"/>
+                        </svg>
+                        <span>HomeLab Guide</span>
+                    </a>
+                    <p>Free, open-source guides for building your own home lab. No ads, no tracking, just knowledge.</p>
+                </div>
+                <nav class="footer-nav">
+                    <div class="footer-section">
+                        <h4>Guides</h4>
+                        <ul>
+                            <li><a href="basics.html">Home Lab Basics</a></li>
+                            <li><a href="docker.html">Docker Fundamentals</a></li>
+                            <li><a href="jellyfin.html">Jellyfin Server</a></li>
+                            <li><a href="reverse-proxy.html">Reverse Proxy & SSL</a></li>
+                            <li><a href="backup.html">Backup Strategy</a></li>
+                            <li><a href="vpn.html">Remote Access (VPN)</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="jellyfin.html">Jellyfin</a></li>
+                            <li><a href="nextcloud.html">Nextcloud</a></li>
+                            <li><a href="homeassistant.html">Home Assistant</a></li>
+                            <li><a href="portainer.html">Portainer</a></li>
+                            <li><a href="uptime-kuma.html">Uptime Kuma</a></li>
+                            <li><a href="authentik.html">Authentik</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Networking</h4>
+                        <ul>
+                            <li><a href="vlans.html">VLANs & Segmentation</a></li>
+                            <li><a href="dns.html">DNS & Local Domains</a></li>
+                            <li><a href="firewall.html">Firewall Rules</a></li>
+                            <li><a href="security.html">Security Hardening</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with ❤️ for the self-hosting community. <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a></p>
+                <p class="license">Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>

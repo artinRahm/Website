@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to setting up Nextcloud - your own private cloud for file sync, calendar, contacts, and 200+ apps. Complete data ownership.">
+    <title>Nextcloud - HomeLab Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="../index.html" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 17h8M12 17v-5"/>
+                </svg>
+                <span>HomeLab Guide</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <ul class="nav-links">
+                <li><a href="../index.html#guides">Guides</a></li>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../index.html#hardware">Hardware</a></li>
+                <li><a href="../index.html#networking">Networking</a></li>
+                <li><a href="../index.html#resources">Resources</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="guide-page">
+        <article class="guide-content container">
+            <header class="guide-header">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="../index.html">Home</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <a href="../index.html#guides">Guides</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <span aria-current="page">Nextcloud</span>
+                </nav>
+                <h1>Nextcloud</h1>
+                <p class="guide-description">Your own private cloud. File storage, calendar, contacts, office suite, and 200+ apps. Complete data ownership with end-to-end encryption.</p>
+                <div class="guide-meta">
+                    <span class="guide-difficulty beginner">Beginner</span>
+                    <span class="guide-time">~25 min read</span>
+                    <span class="guide-updated">Updated 2026</span>
+                </div>
+            </header>
+
+            <section id="why-nextcloud">
+                <h2>Why Nextcloud?</h2>
+
+                <div class="reasons-grid">
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <h3>Data Ownership</h3>
+                        <p>Your files stay on your server. No corporate scanning, no AI training, no subscription fees for your own storage.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </div>
+                        <h3>End-to-End Encryption</h3>
+                        <p>Optional client-side encryption means even you can't read files without the key. Perfect for sensitive documents.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                        <h3>Collaborative Editing</h3>
+                        <p>Collabora Online / OnlyOffice integration for real-time document, spreadsheet, and presentation editing.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <h3>Calendar & Contacts (CalDAV/CardDAV)</h3>
+                        <p>Sync calendars and contacts across all devices. Works with Apple Calendar, Google Calendar, Thunderbird, mobile phones.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <h3>200+ Apps Ecosystem</h3>
+                        <p>Notes, tasks, password manager, maps, talk (video calls), deck (kanban), forms, polls, and much more.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                        <h3>Cost Effective</h3>
+                        <p>Replace Dropbox ($120/yr), Google One ($100/yr), iCloud ($120/yr) with one-time hardware cost.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="hardware-reqs">
+                <h2>Hardware Requirements</h2>
+
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Use Case</th>
+                                <th>CPU</th>
+                                <th>RAM</th>
+                                <th>Storage</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Personal (1-5 users)</td>
+                                <td>2 cores</td>
+                                <td>4 GB</td>
+                                <td>50 GB + data</td>
+                                <td>Raspberry Pi 4, thin client</td>
+                            </tr>
+                            <tr>
+                                <td>Family / Small Team (5-20)</td>
+                                <td>4 cores</td>
+                                <td>8-16 GB</td>
+                                <td>100 GB + data</td>
+                                <td>Intel NUC, Mini PC</td>
+                            </tr>
+                            <tr>
+                                <td>Team / Organization (20-100)</td>
+                                <td>8+ cores</td>
+                                <td>32+ GB</td>
+                                <td>SSD for DB + HDD for data</td>
+                                <td>Dedicated server, Redis caching</td>
+                            </tr>
+                            <tr>
+                                <td>Enterprise (100+)</td>
+                                <td>16+ cores</td>
+                                <td>64+ GB</td>
+                                <td>Clustered storage</td>
+                                <td>Multiple app servers, load balancer</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout callout-tip">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <div>
+                        <strong>Tip:</strong> Put the database (MariaDB/PostgreSQL) and Redis cache on SSD/NVMe. Data directory can be on HDD. This dramatically improves UI responsiveness.
+                    </div>
+                </div>
+            </section>
+
+            <section id="docker-setup">
+                <h2>Docker Deployment</h2>
+
+                <h3>Docker Compose (Recommended: AIO - All-in-One)</h3>
+                <p>The Nextcloud AIO (All-in-One) image includes Nextcloud, database, Redis, and Collabora Online in one container - easiest for beginners.</p>
+
+                <pre><code class="language-yaml">version: '3.8'
+
+services:
+  nextcloud-aio:
+    image: nextcloud/all-in-one:latest
+    container_name: nextcloud-aio
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - nextcloud-aio:/mnt/ncdata
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "8080:8080"  # AIO management interface
+    environment:
+      - TZ=America/New_York
+      - SKIP_DOMAIN_VALIDATION=true
+    # For custom domain (after reverse proxy setup):
+    # - NEXTCLOUD_DATADIR=/mnt/ncdata/ncdata
+    # - NEXTCLOUD_TRUSTED_DOMAINS=cloud.yourdomain.com
+
+networks:
+  homelab:
+    external: true
+
+volumes:
+  nextcloud-aio:</code></pre>
+
+                <h3>Deploy</h3>
+                <pre><code class="language-bash">mkdir -p ~/nextcloud && cd ~/nextcloud
+# Save as docker-compose.yml
+docker compose up -d
+
+# Check logs
+docker compose logs -f nextcloud-aio</code></pre>
+
+                <h3>Initial Setup via AIO Interface</h3>
+                <ol class="steps">
+                    <li>Open <code>http://your-server:8080</code></li>
+                    <li>Set a strong master password for AIO management</li>
+                    <li>Enter your domain (or use <code>localhost</code> for LAN only)</li>
+                    <li>AIO will start all containers (Nextcloud, DB, Redis, Collabora)</li>
+                    <li>Access Nextcloud at <code>http://your-server:8080</code> (or your domain)</li>
+                    <li>Create admin user and complete setup</li>
+                </ol>
+
+                <h3>Alternative: Manual Docker Compose (More Control)</h3>
+                <pre><code class="language-yaml">version: '3.8'
+
+services:
+  nextcloud:
+    image: nextcloud:29-apache
+    container_name: nextcloud
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - nextcloud-data:/var/www/html
+      - /mnt/data/nextcloud:/var/www/html/data
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD_FILE=/run/secrets/db_password
+      - REDIS_HOST=redis
+      - NEXTCLOUD_TRUSTED_DOMAINS=cloud.yourdomain.com
+      - OVERWRITE_CLUSTER_URL=https://cloud.yourdomain.com
+      - OVERWRITEPROTOCOL=https
+    secrets:
+      - db_password
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: mariadb:11
+    container_name: nextcloud-db
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - nextcloud-db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD_FILE=/run/secrets/db_password
+    secrets:
+      - db_root_password
+      - db_password
+
+  redis:
+    image: redis:7-alpine
+    container_name: nextcloud-redis
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - nextcloud-redis:/data
+    command: redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru
+
+networks:
+  homelab:
+    external: true
+
+volumes:
+  nextcloud-data:
+  nextcloud-db:
+  nextcloud-redis:
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+  db_root_password:
+    file: ./secrets/db_root_password.txt</code></pre>
+            </section>
+
+            <section id="post-install">
+                <h2>Post-Install Configuration</h2>
+
+                <h3>Essential Apps to Enable</h3>
+                <p>Apps menu (top right) → <strong>Apps</strong> → Enable these:</p>
+                <ul class="feature-list">
+                    <li><strong>Calendar</strong> - CalDAV calendar</li>
+                    <li><strong>Contacts</strong> - CardDAV address book</li>
+                    <li><strong>Tasks</strong> - CalDAV tasks (syncs with Thunderbird, mobile)</li>
+                    <li><strong>Notes</strong> - Markdown notes with sync</li>
+                    <li><strong>Deck</strong> - Kanban boards</li>
+                    <li><strong>Forms</strong> - Create forms/surveys</li>
+                    <li><strong>Talk</strong> - Video calls & chat</li>
+                    <li><strong>Passwords</strong> - Bitwarden-compatible password manager</li>
+                    <li><strong>Maps</strong> - Photo location mapping</li>
+                    <li><strong>Music</strong> - Audio player for your library</li>
+                </ul>
+
+                <h3>Configure Collabora Online (Office Suite)</h3>
+                <p>If using AIO: Already included. For manual setup:</p>
+                <pre><code class="language-yaml">  collabora:
+    image: collabora/code:latest
+    container_name: collabora
+    restart: unless-stopped
+    networks:
+      - homelab
+    environment:
+      - domain=cloud\\.yourdomain\\.com
+      - username=admin
+      - password=strongpassword
+    ports:
+      - "9980:9980"</code></pre>
+                <p>Then in Nextcloud: Apps → Office → Collabora Online → Set URL to <code>https://collabora.yourdomain.com</code> (via reverse proxy).</p>
+
+                <h3>Performance Optimization</h3>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <h4>Redis Caching (Critical)</h4>
+                        <pre><code class="language-php"># In config/config.php:
+'memcache.local' => '\\OC\\Memcache\\Redis',
+'memcache.distributed' => '\\OC\\Memcache\\Redis',
+'memcache.locking' => '\\OC\\Memcache\\Redis',
+'redis' => [
+    'host' => 'redis',
+    'port' => 6379,
+],</code></pre>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Preview Generators</h4>
+                        <pre><code class="language-bash"># Generate previews for existing files
+docker exec -u www-data nextcloud php occ preview:generate-all -vvv
+
+# Schedule daily preview generation
+# Add to cron (host): 0 3 * * * docker exec -u www-data nextcloud php occ preview:pre-generate</code></pre>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Background Jobs (Cron)</h4>
+                        <pre><code class="language-bash"># On host - run every 5 minutes
+*/5 * * * * docker exec -u www-data nextcloud php occ cron</code></pre>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Database Tuning</h3>
+                        <pre><code class="language-sql"># MariaDB: add to /etc/mysql/mariadb.conf.d/99-nextcloud.cnf
+[mysqld]
+innodb_buffer_pool_size = 2G  # 50-70% of RAM
+innodb_log_file_size = 512M
+innodb_flush_log_at_trx_commit = 2</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="clients">
+                <h2>Client Setup</h2>
+
+                <div class="client-grid">
+                    <div class="client-card">
+                        <h3>Desktop Sync Client</h3>
+                        <ul>
+                            <li><strong>Windows/macOS/Linux:</strong> <a href="https://nextcloud.com/install/#install-clients" target="_blank" rel="noopener">Official client</a></li>
+                            <li>Selective sync, bandwidth limits, conflict resolution</li>
+                            <li>System tray integration, file explorer integration</li>
+                        </ul>
+                    </div>
+                    <div class="client-card">
+                        <h3>Mobile Apps</h3>
+                        <ul>
+                            <li><strong>iOS:</strong> Nextcloud (App Store)</li>
+                            <li><strong>Android:</strong> Nextcloud (Play Store / F-Droid)</li>
+                            <li>Auto-upload photos, offline access, passcode lock</li>
+                        </ul>
+                    </div>
+                    <div class="client-card">
+                        <h3>CalDAV/CardDAV Integration</h3>
+                        <ul>
+                            <li><strong>Thunderbird:</strong> Built-in (Calendar + Address Book)</li>
+                            <li><strong>Apple Calendar/Contacts:</strong> Add account → CalDAV/CardDAV</li>
+                            <li><strong>Android:</strong> DAVx⁵ (F-Droid/Play Store) - best sync</li>
+                            <li><strong>iOS:</strong> Settings → Accounts → Add CalDAV/CardDAV</li>
+                        </ul>
+                    </div>
+                    <div class="client-card">
+                        <h3>WebDAV Access</h3>
+                        <ul>
+                            <li>Mount as network drive: <code>https://cloud.yourdomain.com/remote.php/dav/files/username/</code></li>
+                            <li>Linux: <code>gvfs-mount davs://cloud.yourdomain.com/remote.php/dav/files/username/</code></li>
+                            <li>Windows: Map network drive</li>
+                            <li>rclone: <code>rclone config</code> → type: webdav</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="backup">
+                <h2>Backup Strategy</h2>
+
+                <h3>What to Back Up</h3>
+                <ul class="feature-list">
+                    <li><strong>Database:</strong> MariaDB/PostgreSQL dump</li>
+                    <li><strong>Data directory:</strong> <code>/mnt/data/nextcloud</code> (user files)</li>
+                    <li><strong>Config:</strong> <code>config/config.php</code></li>
+                    <li><strong>Custom apps/themes:</strong> <code>apps/</code>, <code>themes/</code></li>
+                </ul>
+
+                <h3>Automated Backup Script</h3>
+                <pre><code class="language-bash">#!/bin/bash
+# /usr/local/bin/backup-nextcloud.sh
+set -euo pipefail
+
+BACKUP_DIR="/mnt/backups/nextcloud"
+DATE=$(date +%F_%H-%M)
+RETENTION_DAYS=30
+
+mkdir -p "$BACKUP_DIR"
+
+# 1. Put Nextcloud in maintenance mode
+docker exec -u www-data nextcloud php occ maintenance:mode --on
+
+# 2. Backup database
+docker exec nextcloud-db mariadb-dump -u nextcloud -p"$DB_PASSWORD" nextcloud | gzip > "$BACKUP_DIR/db_$DATE.sql.gz"
+
+# 3. Backup data directory (rsync for efficiency)
+rsync -a --delete /mnt/data/nextcloud/ "$BACKUP_DIR/data_$DATE/"
+
+# 4. Backup config
+docker cp nextcloud:/var/www/html/config/config.php "$BACKUP_DIR/config_$DATE.php"
+
+# 5. Exit maintenance mode
+docker exec -u www-data nextcloud php occ maintenance:mode --off
+
+# 6. Cleanup old backups
+find "$BACKUP_DIR" -type f -mtime +$RETENTION_DAYS -delete
+find "$BACKUP_DIR" -type d -mtime +$RETENTION_DAYS -empty -delete
+
+echo "Backup completed: $DATE"</code></pre>
+
+                <h3>Restore Procedure</h3>
+                <pre><code class="language-bash"># 1. Stop Nextcloud
+docker compose down
+
+# 2. Restore database
+gunzip -c db_2026-01-15_03-00.sql.gz | docker exec -i nextcloud-db mariadb -u nextcloud -p nextcloud
+
+# 3. Restore data directory
+rsync -a --delete /mnt/backups/nextcloud/data_2026-01-15_03-00/ /mnt/data/nextcloud/
+
+# 4. Restore config
+docker cp config_2026-01-15_03-00.php nextcloud:/var/www/html/config/config.php
+
+# 5. Start and verify
+docker compose up -d
+docker exec -u www-data nextcloud php occ maintenance:mode --off</code></pre>
+            </section>
+
+            <section id="troubleshooting">
+                <h2>Troubleshooting</h2>
+
+                <div class="troubleshooting-grid">
+                    <div class="issue-card">
+                        <h4>"Trusted domain" error</h4>
+                        <pre><code class="language-bash"># Add to config/config.php:
+'trusted_domains' =>
+  array (
+    0 => 'localhost',
+    1 => '192.168.1.100',
+    2 => 'cloud.yourdomain.com',
+  ),</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Slow UI / Timeouts</h4>
+                        <pre><code class="language-bash"># Check Redis is working
+docker exec nextcloud-redis redis-cli ping
+# Should return PONG
+
+# Check PHP memory limit
+docker exec nextcloud php -i | grep memory_limit
+# Increase in docker-compose: PHP_MEMORY_LIMIT=512M</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Collabora not loading</h4>
+                        <pre><code class="language-bash"># Check Collabora logs
+docker logs collabora
+
+# Verify domain format in env (escape dots):
+# domain=cloud\\.yourdomain\\.com
+
+# Check reverse proxy WebSocket support</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Files not syncing (client)</h4>
+                        <pre><code class="language-bash"># Check Nextcloud logs
+docker exec nextcloud tail -f /var/www/html/data/nextcloud.log
+
+# Verify WebDAV endpoint
+curl -u user:pass https://cloud.yourdomain.com/remote.php/dav/files/user/
+
+# Check client logs (Windows: %APPDATA%\Nextcloud\logs)</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Upgrade issues</h4>
+                        <pre><code class="language-bash"># AIO: Use management interface at :8080
+# Manual:
+docker compose pull
+docker compose up -d
+docker exec -u www-data nextcloud php occ upgrade
+docker exec -u www-data nextcloud php occ maintenance:mode --off</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Storage full</h4>
+                        <pre><code class="language-bash"># Check usage
+docker exec nextcloud php occ files:scan --all
+docker exec nextcloud php occ files:cleanup
+
+# Check versions/trashbin
+docker exec nextcloud php occ versions:cleanup
+docker exec nextcloud php occ trashbin:cleanup --all-users</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="guide-navigation">
+                <a href="../index.html#guides" class="btn btn-secondary">← Back to Guides</a>
+                <a href="homeassistant.html" class="btn btn-primary">Next: Home Assistant →</a>
+            </nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <path d="M8 17h8M12 17v-5"/>
+                        </svg>
+                        <span>HomeLab Guide</span>
+                    </a>
+                    <p>Free, open-source guides for building your own home lab. No ads, no tracking, just knowledge.</p>
+                </div>
+                <nav class="footer-nav">
+                    <div class="footer-section">
+                        <h4>Guides</h4>
+                        <ul>
+                            <li><a href="basics.html">Home Lab Basics</a></li>
+                            <li><a href="docker.html">Docker Fundamentals</a></li>
+                            <li><a href="jellyfin.html">Jellyfin Server</a></li>
+                            <li><a href="reverse-proxy.html">Reverse Proxy & SSL</a></li>
+                            <li><a href="backup.html">Backup Strategy</a></li>
+                            <li><a href="vpn.html">Remote Access (VPN)</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="jellyfin.html">Jellyfin</a></li>
+                            <li><a href="nextcloud.html">Nextcloud</a></li>
+                            <li><a href="homeassistant.html">Home Assistant</a></li>
+                            <li><a href="portainer.html">Portainer</a></li>
+                            <li><a href="uptime-kuma.html">Uptime Kuma</a></li>
+                            <li><a href="authentik.html">Authentik</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Networking</h4>
+                        <ul>
+                            <li><a href="vlans.html">VLANs & Segmentation</a></li>
+                            <li><a href="dns.html">DNS & Local Domains</a></li>
+                            <li><a href="firewall.html">Firewall Rules</a></li>
+                            <li><a href="security.html">Security Hardening</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with ❤️ for the self-hosting community. <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a></p>
+                <p class="license">Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>

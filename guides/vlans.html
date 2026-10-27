@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to VLANs and network segmentation for home labs. Separate IoT, management, and trusted devices for security. Configure on managed switches and router.">
+    <title>VLANs & Segmentation - HomeLab Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="../index.html" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 17h8M12 17v-5"/>
+                </svg>
+                <span>HomeLab Guide</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <ul class="nav-links">
+                <li><a href="../index.html#guides">Guides</a></li>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../index.html#hardware">Hardware</a></li>
+                <li><a href="../index.html#networking">Networking</a></li>
+                <li><a href="../index.html#resources">Resources</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="guide-page">
+        <article class="guide-content container">
+            <header class="guide-header">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="../index.html">Home</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <a href="../index.html#guides">Guides</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <span aria-current="page">VLANs & Segmentation</span>
+                </nav>
+                <h1>VLANs & Network Segmentation</h1>
+                <p class="guide-description">Separate IoT, management, and trusted devices for security. Configure on managed switches and router for defense in depth.</p>
+                <div class="guide-meta">
+                    <span class="guide-difficulty intermediate">Intermediate</span>
+                    <span class="guide-time">~25 min read</span>
+                    <span class="guide-updated">Updated 2026</span>
+                </div>
+            </header>
+
+            <section id="why-vlans">
+                <h2>Why Network Segmentation?</h2>
+                <div class="reasons-grid">
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </div>
+                        <h3>Contain Breaches</h3>
+                        <p>If IoT device is compromised, attacker can't easily reach management network or trusted devices.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <h3>Reduce Broadcast Domain</h3>
+                        <p>Less broadcast traffic per segment. Better performance, easier troubleshooting.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <h3>Policy Enforcement</h3>
+                        <p>Firewall rules between VLANs. IoT can't initiate connections to management. Guest isolated from everything.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        <h3>Compliance & Organization</h3>
+                        <p>Clear network topology. Easier auditing. Logical grouping by function, not physical location.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="vlan-planning">
+                <h2>VLAN Planning</h2>
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>VLAN ID</th>
+                                <th>Name</th>
+                                <th>Subnet</th>
+                                <th>Purpose</th>
+                                <th>Access Policy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>MGMT</td>
+                                <td>10.10.10.0/24</td>
+                                <td>Network gear, hypervisors, management IPs</td>
+                                <td>Admin only, no internet</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>SERVERS</td>
+                                <td>10.10.10.0/24</td>
+                                <td>Docker hosts, VMs, NAS, services</td>
+                                <td>Inter-VLAN to clients, limited internet</td>
+                            </tr>
+                            <tr>
+                                <td>20</td>
+                                <td>TRUSTED</td>
+                                <td>10.10.20.0/24</td>
+                                <td>Personal devices, laptops, phones</td>
+                                <td>Full internet, access to servers</td>
+                            </tr>
+                            <tr>
+                                <td>30</td>
+                                <td>IOT</td>
+                                <td>10.10.30.0/24</td>
+                                <td>Smart home devices, cameras, sensors</td>
+                                <td>No internet initiation, no inter-VLAN</td>
+                            </tr>
+                            <tr>
+                                <td>40</td>
+                                <td>GUEST</td>
+                                <td>10.10.40.0/24</td>
+                                <td>Visitor devices</td>
+                                <td>Internet only, completely isolated</td>
+                            </tr>
+                            <tr>
+                                <td>50</td>
+                                <td>VPN</td>
+                                <td>10.10.50.0/24</td>
+                                <td>WireGuard/Tailscale clients</td>
+                                <td>Access to management & servers</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="callout callout-tip">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <div>
+                        <strong>Tip:</strong> Use consistent VLAN IDs across all switches. Document your scheme. Reserve IDs 100+ for future expansion (DMZ, lab, etc.).
+                    </div>
+                </div>
+            </section>
+
+            <section id="switch-config">
+                <h2>Managed Switch Configuration</h2>
+                <h3>Port Types</h3>
+                <ul class="feature-list">
+                    <li><strong>Access Port:</strong> Single VLAN, untagged. End devices (PCs, APs, cameras).</li>
+                    <li><strong>Trunk Port:</strong> Multiple VLANs, tagged. Uplinks, router, hypervisors, APs with multiple SSIDs.</li>
+                    <li><strong>Hybrid Port:</strong> One untagged (native) + tagged VLANs. Rarely needed.</li>
+                </ul>
+
+                <h3>Example: TP-Link / Omada / Generic CLI</h3>
+                <pre><code class="language-bash"># Create VLANs
+vlan 10
+ name SERVERS
+vlan 20
+ name TRUSTED
+vlan 30
+ name IOT
+vlan 40
+ name GUEST
+
+# Configure access ports (end devices)
+interface gigabitethernet 1/0/1
+ description "NAS"
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+
+interface gigabitethernet 1/0/5
+ description "Living Room AP"
+ switchport mode access
+ switchport access vlan 20
+
+# Configure trunk port (uplink to router)
+interface gigabitethernet 1/0/24
+ description "Uplink to Router"
+ switchport mode trunk
+ switchport trunk allowed vlan 1,10,20,30,40,50
+ switchport trunk native vlan 1</code></pre>
+
+                <h3>UniFi Switch (via Controller UI)</h3>
+                <ol class="steps">
+                    <li>Settings → Networks → Create New Network for each VLAN</li>
+                    <li>Set VLAN ID, subnet, DHCP (or none for MGMT)</li>
+                    <li>Port Manager → Select ports → Assign Network Profile</li>
+                    <li>Uplink port: Set to "All" (trunk) or specific VLANs</li>
+                    <li>AP ports: Trunk with all WiFi VLANs</li>
+                </ol>
+            </section>
+
+            <section id="router-config">
+                <h2>Router / Gateway Configuration (OPNsense / pfSense)</h2>
+                <h3>Create VLAN Interfaces</h3>
+                <pre><code class="language-text"># OPNsense: Interfaces → Other Types → VLAN
+# Parent: Physical interface (e.g., igb0)
+# VLAN Tag: 10, 20, 30, 40, 50
+# Name: SERVERS, TRUSTED, IOT, GUEST, VPN</code></pre>
+
+                <h3>DHCP Server per VLAN</h3>
+                <ul class="feature-list">
+                    <li>Services → DHCPv4 → [VLAN Interface]</li>
+                    <li>Enable, set range (e.g., 10.10.10.100-199)</li>
+                    <li>DNS: Point to Pi-hole/AdGuard (on SERVERS VLAN)</li>
+                    <li>Gateway: VLAN interface IP</li>
+                </ul>
+
+                <h3>Firewall Rules (Top-Down Processing)</h3>
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Interface</th>
+                                <th>Action</th>
+                                <th>Source</th>
+                                <th>Destination</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>MGMT</td>
+                                <td>Pass</td>
+                                <td>MGMT net</td>
+                                <td>Any</td>
+                                <td>Management can reach all</td>
+                            </tr>
+                            <tr>
+                                <td>SERVERS</td>
+                                <td>Pass</td>
+                                <td>SERVERS net</td>
+                                <td>TRUSTED, VPN</td>
+                                <td>Services to clients</td>
+                            </tr>
+                            <tr>
+                                <td>SERVERS</td>
+                                <td>Block</td>
+                                <td>SERVERS net</td>
+                                <td>IOT, GUEST</td>
+                                <td>No access to untrusted</td>
+                            </tr>
+                            <tr>
+                                <td>TRUSTED</td>
+                                <td>Pass</td>
+                                <td>TRUSTED net</td>
+                                <td>SERVERS, MGMT, VPN</td>
+                                <td>Clients to services</td>
+                            </tr>
+                            <tr>
+                                <td>TRUSTED</td>
+                                <td>Pass</td>
+                                <td>TRUSTED net</td>
+                                <td>Any (WAN)</td>
+                                <td>Internet access</td>
+                            </tr>
+                            <tr>
+                                <td>IOT</td>
+                                <td>Pass</td>
+                                <td>IOT net</td>
+                                <td>DNS (Pi-hole)</td>
+                                <td>DNS resolution only</td>
+                            </tr>
+                            <tr>
+                                <td>IOT</td>
+                                <td>Block</td>
+                                <td>IOT net</td>
+                                <td>RFC1918 (all LAN)</td>
+                                <td>No inter-VLAN access</td>
+                            </tr>
+                            <tr>
+                                <td>IOT</td>
+                                <td>Pass</td>
+                                <td>IOT net</td>
+                                <td>WAN (specific)</td>
+                                <td>Allow NTP, updates only</td>
+                            </tr>
+                            <tr>
+                                <td>GUEST</td>
+                                <td>Pass</td>
+                                <td>GUEST net</td>
+                                <td>WAN</td>
+                                <td>Internet only</td>
+                            </tr>
+                            <tr>
+                                <td>GUEST</td>
+                                <td>Block</td>
+                                <td>GUEST net</td>
+                                <td>RFC1918</td>
+                                <td>No LAN access</td>
+                            </tr>
+                            <tr>
+                                <td>VPN</td>
+                                <td>Pass</td>
+                                <td>VPN net</td>
+                                <td>MGMT, SERVERS, TRUSTED</td>
+                                <td>Remote admin access</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout callout-warning">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <div>
+                        <strong>Important:</strong> Always create a "Allow established/related" rule at top. Put explicit blocks before "allow all" rules. Test from each VLAN before locking down.
+                    </div>
+                </div>
+            </section>
+
+            <section id="wifi-vlans">
+                <h2>WiFi VLAN Mapping (UniFi / OpenWrt)</h2>
+                <h3>UniFi Controller</h3>
+                <ol class="steps">
+                    <li>Settings → WiFi → Create SSID per VLAN</li>
+                    <li>"Trusted WiFi" → VLAN 20 (TRUSTED)</li>
+                    <li>"IoT WiFi" → VLAN 30 (IOT) - 2.4GHz only</li>
+                    <li>"Guest WiFi" → VLAN 40 (GUEST) - Enable Guest Policy</li>
+                    <li>AP port on switch: Trunk with VLANs 20,30,40 tagged</li>
+                </ol>
+
+                <h3>OpenWrt (/etc/config/wireless)</h3>
+                <pre><code class="language-text">config wifi-iface 'trusted'
+    option device 'radio0'
+    option network 'trusted'
+    option mode 'ap'
+    option ssid 'Home-Trusted'
+    option encryption 'psk2+ccmp'
+    option key 'your-password'
+    option vlan '20'
+
+config wifi-iface 'iot'
+    option device 'radio0'
+    option network 'iot'
+    option mode 'ap'
+    option ssid 'Home-IoT'
+    option encryption 'psk2+ccmp'
+    option key 'iot-password'
+    option vlan '30'</code></pre>
+            </section>
+
+            <section id="inter-vlan-routing">
+                <h2>Inter-VLAN Routing Options</h2>
+
+                <h3>Option 1: Router-on-a-Stick (Single Interface)</h3>
+                <p>One physical link from router to switch (trunk). Router does all inter-VLAN routing.</p>
+                <pre><code class="language-text">Pros: Simple, single cable
+Cons: All traffic through router (bottleneck), single point of failure</code></pre>
+
+                <h3>Option 2: Layer 3 Switch (Recommended for 10G+)</h3>
+                <p>Switch has routing capability. Traffic between VLANs stays on switch backplane.</p>
+                <pre><code class="language-bash"># Enable routing
+ip routing
+
+# Create SVIs (Switch Virtual Interfaces)
+interface vlan 10
+ ip address 10.10.10.1 255.255.255.0
+interface vlan 20
+ ip address 10.10.20.1 255.255.255.0
+# ... repeat for each VLAN
+
+# Default route to firewall
+ip route 0.0.0.0 0.0.0.0 10.10.1.1  # Firewall IP</code></pre>
+
+                <h3>Option 3: Separate Router + L3 Switch</h3>
+                <p>L3 switch for high-speed inter-VLAN, firewall for WAN/VPN/edge policies.</p>
+            </section>
+
+            <section id="testing">
+                <h2>Testing & Validation</h2>
+                <ol class="steps">
+                    <li>Ping gateway from each VLAN: <code>ping 10.10.10.1</code></li>
+                    <li>Ping across VLANs (should work per firewall rules)</li>
+                    <li>Test blocked paths: <code>ping 10.10.30.10</code> from TRUSTED (should fail)</li>
+                    <li>Verify internet: <code>curl https://1.1.1.1</code></li>
+                    <li>Check DNS: <code>nslookup google.com 10.10.10.5</code> (Pi-hole)</li>
+                    <li>Test WiFi: Connect to each SSID, verify correct IP/VLAN</li>
+                </ol>
+
+                <h3>Verification Commands</h3>
+                <pre><code class="language-bash"># On router/firewall
+arp -a | grep 10.10.30   # Verify IOT devices got correct IPs
+
+# On switch
+show mac address-table dynamic | grep vlan 30
+show interfaces trunk
+
+# Packet capture
+tcpdump -i vlan30 -n port 53  # DNS traffic on IOT VLAN</code></pre>
+            </section>
+
+            <section id="troubleshooting">
+                <h2>Troubleshooting</h2>
+                <div class="troubleshooting-grid">
+                    <div class="issue-card">
+                        <h4>Devices can't get DHCP</h4>
+                        <pre><code class="language-bash"># Check VLAN interface up on router
+# Verify DHCP server enabled on that interface
+# Check switch port: correct VLAN, not trunk
+# Trunk port: allowed VLANs includes this VLAN
+# Native VLAN mismatch on trunk</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Can ping gateway but not internet</h4>
+                        <pre><code class="language-bash"># Check outbound NAT rules on firewall
+# Verify WAN interface has valid IP
+# Check DNS resolution (try 8.8.8.8 directly)
+# Firewall rule: allow VLAN net to WAN</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Inter-VLAN not working</h4>
+                        <pre><code class="language-bash"># Check firewall rules on SOURCE interface
+# Rules processed top-down, first match wins
+# Verify no "block RFC1918" rule above allow rule
+# Check state table: pfctl -ss | grep 10.10</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>WiFi clients on wrong VLAN</h4>
+                        <pre><code class="language-bash"># AP switch port must be trunk with all SSID VLANs tagged
+# Verify SSID → VLAN mapping in controller
+# Check RADIUS/VLAN attributes if using Enterprise auth</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>mDNS/Chromecast not crossing VLANs</h4>
+                        <pre><code class="language-bash"># Install avahi-daemon / mdns-repeater on router
+# Or use UDP reflector (port 5353)
+# UniFi: Settings → Networks → Enable mDNS Reflection</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="guide-navigation">
+                <a href="../index.html#guides" class="btn btn-secondary">← Back to Guides</a>
+                <a href="dns.html" class="btn btn-primary">Next: DNS & Local Domains →</a>
+            </nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <path d="M8 17h8M12 17v-5"/>
+                        </svg>
+                        <span>HomeLab Guide</span>
+                    </a>
+                    <p>Free, open-source guides for building your own home lab. No ads, no tracking, just knowledge.</p>
+                </div>
+                <nav class="footer-nav">
+                    <div class="footer-section">
+                        <h4>Guides</h4>
+                        <ul>
+                            <li><a href="basics.html">Home Lab Basics</a></li>
+                            <li><a href="docker.html">Docker Fundamentals</a></li>
+                            <li><a href="jellyfin.html">Jellyfin Server</a></li>
+                            <li><a href="reverse-proxy.html">Reverse Proxy & SSL</a></li>
+                            <li><a href="backup.html">Backup Strategy</a></li>
+                            <li><a href="vpn.html">Remote Access (VPN)</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="jellyfin.html">Jellyfin</a></li>
+                            <li><a href="nextcloud.html">Nextcloud</a></li>
+                            <li><a href="homeassistant.html">Home Assistant</a></li>
+                            <li><a href="portainer.html">Portainer</a></li>
+                            <li><a href="uptime-kuma.html">Uptime Kuma</a></li>
+                            <li><a href="authentik.html">Authentik</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Networking</h4>
+                        <ul>
+                            <li><a href="vlans.html">VLANs & Segmentation</a></li>
+                            <li><a href="dns.html">DNS & Local Domains</a></li>
+                            <li><a href="firewall.html">Firewall Rules</a></li>
+                            <li><a href="security.html">Security Hardening</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with ❤️ for the self-hosting community. <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a></p>
+                <p class="license">Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>

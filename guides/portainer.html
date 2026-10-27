@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to setting up Portainer - visual web UI for managing Docker containers, images, networks, and volumes. Makes container management easy.">
+    <title>Portainer - HomeLab Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="../index.html" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 17h8M12 17v-5"/>
+                </svg>
+                <span>HomeLab Guide</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <ul class="nav-links">
+                <li><a href="../index.html#guides">Guides</a></li>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../index.html#hardware">Hardware</a></li>
+                <li><a href="../index.html#networking">Networking</a></li>
+                <li><a href="../index.html#resources">Resources</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="guide-page">
+        <article class="guide-content container">
+            <header class="guide-header">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="../index.html">Home</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <a href="../index.html#guides">Guides</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <span aria-current="page">Portainer</span>
+                </nav>
+                <h1>Portainer</h1>
+                <p class="guide-description">Visual web UI for managing Docker containers, images, networks, and volumes. Makes container management easy with stack deployment, resource monitoring, and access control.</p>
+                <div class="guide-meta">
+                    <span class="guide-difficulty beginner">Beginner</span>
+                    <span class="guide-time">~15 min read</span>
+                    <span class="guide-updated">Updated 2026</span>
+                </div>
+            </header>
+
+            <section id="why-portainer">
+                <h2>Why Portainer?</h2>
+
+                <div class="reasons-grid">
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 17h8M12 17v-5"/></svg>
+                        </div>
+                        <h3>Web-Based GUI</h3>
+                        <p>Manage everything from a browser. No CLI required for daily operations. Great for visual learners.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                        </div>
+                        <h3>Stack Deployment (Compose)</h3>
+                        <p>Deploy multi-container apps with Docker Compose files. Edit, version, and redeploy stacks easily.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <h3>Resource Monitoring</h3>
+                        <p>Real-time CPU, memory, network, and disk usage per container. Historical graphs for capacity planning.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </div>
+                        <h3>Access Control (RBAC)</h3>
+                        <p>Teams, roles, resource pools. Limit who can deploy, view logs, exec into containers. SSO via OIDC/LDAP.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                        <h3>Multi-Environment</h3>
+                        <p>Manage local Docker, remote Docker, Kubernetes, ACI, Nomad from one UI. Edge agents for remote nodes.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <h3>App Templates</h3>
+                        <p>One-click deploy for 100+ popular apps. Create custom templates for your standard stacks.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="docker-setup">
+                <h2>Docker Deployment</h2>
+
+                <h3>Docker Compose (Standalone)</h3>
+                <pre><code class="language-yaml">version: '3.8'
+
+services:
+  portainer:
+    image: portainer/portainer-ce:2.21
+    container_name: portainer
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - portainer-data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "9000:9000"   # HTTP
+      - "9443:9443"   # HTTPS
+    environment:
+      - TZ=America/New_York
+
+networks:
+  homelab:
+    external: true
+
+volumes:
+  portainer-data:</code></pre>
+
+                <h3>Deploy</h3>
+                <pre><code class="language-bash">mkdir -p ~/portainer && cd ~/portainer
+# Save as docker-compose.yml
+docker compose up -d
+
+# Check logs
+docker compose logs -f portainer</code></pre>
+
+                <h3>Initial Setup</h3>
+                <ol class="steps">
+                    <li>Open <code>https://your-server:9443</code> (accept self-signed cert)</li>
+                    <li>Create admin user (username/password)</li>
+                    <li>Select "Get Started" → "Docker" → "Local" environment</li>
+                    <li>Click "Connect" - Portainer detects local Docker</li>
+                </ol>
+            </section>
+
+            <section id="core-features">
+                <h2>Core Features Walkthrough</h2>
+
+                <h3>Home Dashboard</h3>
+                <p>Overview of all environments, container counts, resource usage, and quick actions.</p>
+
+                <h3>Containers</h3>
+                <ul class="feature-list">
+                    <li>List all containers with status, image, ports, networks</li>
+                    <li>Start/stop/restart/kill/remove with one click</li>
+                    <li>View logs (with search/filter), inspect JSON, stats</li>
+                    <li>Exec into container (interactive terminal in browser)</li>
+                    <li>Attach to running container</li>
+                    <li>Duplicate/edit container (creates new with same config)</li>
+                </ul>
+
+                <h3>Images</h3>
+                <ul class="feature-list">
+                    <li>Pull, import, export, remove images</li>
+                    <li>Tag images, view layers, vulnerability scan (with Trivy)</li>
+                    <li>Prune unused images to reclaim space</li>
+                </ul>
+
+                <h3>Stacks (Docker Compose)</h3>
+                <p>The most powerful feature for home lab management.</p>
+                <pre><code class="language-yaml"># Example stack - Jellyfin with hardware transcoding
+version: '3.8'
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:10.10.7
+    container_name: jellyfin
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - jellyfin-config:/config
+      - jellyfin-metadata:/data
+      - /mnt/media:/media:ro
+    ports:
+      - "8096:8096"
+    devices:
+      - /dev/dri:/dev/dri
+    environment:
+      - TZ=America/New_York
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+networks:
+  homelab:
+    external: true
+
+volumes:
+  jellyfin-config:
+  jellyfin-metadata:</code></pre>
+                <ol class="steps">
+                    <li>Stacks → + Add stack</li>
+                    <li>Name: "jellyfin", paste Compose YAML</li>
+                    <li>Deploy the stack</li>
+                    <li>Portainer pulls images, creates network/volumes, starts containers</li>
+                    <li>Update: Edit stack → Redeploy (pulls new images, recreates containers)</li>
+                </ol>
+
+                <h3>Networks & Volumes</h3>
+                <ul class="feature-list">
+                    <li>Visual network topology</li>
+                    <li>Create/manage bridge, overlay, macvlan networks</li>
+                    <li>Volume management: create, browse, backup, remove</li>
+                    <li>Bind mount management</li>
+                </ul>
+
+                <h3>Environments</h3>
+                <p>Add remote Docker hosts, Kubernetes clusters, or edge agents for managing multiple nodes from one Portainer instance.</p>
+            </section>
+
+            <section id="advanced">
+                <h2>Advanced Configuration</h2>
+
+                <h3>Reverse Proxy with SSL</h3>
+                <p>Using Nginx Proxy Manager (see <a href="reverse-proxy.html">Reverse Proxy Guide</a>):</p>
+                <ol class="steps">
+                    <li>Add proxy host: <code>portainer.yourdomain.com</code></li>
+                    <li>Forward to: <code>portainer:9000</code></li>
+                    <li>Enable WebSocket support</li>
+                    <li>SSL: Let's Encrypt, Force SSL, HSTS</li>
+                </ol>
+
+                <h3>Backup Portainer Data</h3>
+                <pre><code class="language-bash">#!/bin/bash
+# Backup Portainer config (includes users, settings, stacks)
+DATE=$(date +%F)
+docker run --rm \
+  -v portainer-data:/data \
+  -v $(pwd):/backup \
+  alpine tar czf /backup/portainer-backup-$DATE.tar.gz -C /data .
+
+# Restore:
+docker run --rm \
+  -v portainer-data:/data \
+  -v $(pwd):/backup \
+  alpine tar xzf /backup/portainer-backup-2026-01-15.tar.gz -C /data</code></pre>
+
+                <h3>Enable Authentication (OIDC/LDAP)</h3>
+                <p>Settings → Authentication → Add OIDC provider (Authentik, Keycloak, etc.) or LDAP server.</p>
+
+                <h3>Resource Limits & Reservations</h3>
+                <p>In stack editor, add deploy resources:</p>
+                <pre><code class="language-yaml">deploy:
+  resources:
+    limits:
+      cpus: '2'
+      memory: 2G
+    reservations:
+      cpus: '0.5'
+      memory: 512M</code></pre>
+            </section>
+
+            <section id="troubleshooting">
+                <h2>Troubleshooting</h2>
+
+                <div class="troubleshooting-grid">
+                    <div class="issue-card">
+                        <h4>Cannot connect to Docker socket</h4>
+                        <pre><code class="language-bash"># Check socket permissions
+ls -la /var/run/docker.sock
+# Should be root:docker
+
+# Add portainer user to docker group (if not root in container)
+# Or run container as root (default)</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Stack deploy fails</h4>
+                        <pre><code class="language-bash"># Check stack logs in Portainer UI
+# Or via CLI:
+docker compose -f /var/lib/portainer/stacks/1/docker-compose.yml up -d
+
+# Common issues:
+# - Port conflicts
+# - Volume permissions
+# - Missing networks (create external first)</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Forgot admin password</h4>
+                        <pre><code class="language-bash"># Reset admin password
+docker run --rm \
+  -v portainer-data:/data \
+  portainer/portainer-ce:2.21 \
+  --admin-password='$2a$12$newpasswordhash' \
+  --reset-password
+
+# Or delete /data/portainer.db and restart (loses all settings)</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Edge agent won't connect</h4>
+                        <pre><code class="language-bash"># Check edge agent logs
+docker logs portainer-edge-agent
+
+# Verify environment variables:
+# EDGE_KEY, EDGE_ID, CAP_PORTAINER_URL</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="guide-navigation">
+                <a href="../index.html#guides" class="btn btn-secondary">← Back to Guides</a>
+                <a href="uptime-kuma.html" class="btn btn-primary">Next: Uptime Kuma →</a>
+            </nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <path d="M8 17h8M12 17v-5"/>
+                        </svg>
+                        <span>HomeLab Guide</span>
+                    </a>
+                    <p>Free, open-source guides for building your own home lab. No ads, no tracking, just knowledge.</p>
+                </div>
+                <nav class="footer-nav">
+                    <div class="footer-section">
+                        <h4>Guides</h4>
+                        <ul>
+                            <li><a href="basics.html">Home Lab Basics</a></li>
+                            <li><a href="docker.html">Docker Fundamentals</a></li>
+                            <li><a href="jellyfin.html">Jellyfin Server</a></li>
+                            <li><a href="reverse-proxy.html">Reverse Proxy & SSL</a></li>
+                            <li><a href="backup.html">Backup Strategy</a></li>
+                            <li><a href="vpn.html">Remote Access (VPN)</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="jellyfin.html">Jellyfin</a></li>
+                            <li><a href="nextcloud.html">Nextcloud</a></li>
+                            <li><a href="homeassistant.html">Home Assistant</a></li>
+                            <li><a href="portainer.html">Portainer</a></li>
+                            <li><a href="uptime-kuma.html">Uptime Kuma</a></li>
+                            <li><a href="authentik.html">Authentik</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Networking</h4>
+                        <ul>
+                            <li><a href="vlans.html">VLANs & Segmentation</a></li>
+                            <li><a href="dns.html">DNS & Local Domains</a></li>
+                            <li><a href="firewall.html">Firewall Rules</a></li>
+                            <li><a href="security.html">Security Hardening</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with ❤️ for the self-hosting community. <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a></p>
+                <p class="license">Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>

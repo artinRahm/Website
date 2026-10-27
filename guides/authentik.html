@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to setting up Authentik - open-source identity provider. SSO, OAuth2/OIDC, SAML, LDAP. Secure all your services with one login.">
+    <title>Authentik - HomeLab Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="../index.html" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 17h8M12 17v-5"/>
+                </svg>
+                <span>HomeLab Guide</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <ul class="nav-links">
+                <li><a href="../index.html#guides">Guides</a></li>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../index.html#hardware">Hardware</a></li>
+                <li><a href="../index.html#networking">Networking</a></li>
+                <li><a href="../index.html#resources">Resources</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="guide-page">
+        <article class="guide-content container">
+            <header class="guide-header">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="../index.html">Home</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <a href="../index.html#guides">Guides</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <span aria-current="page">Authentik</span>
+                </nav>
+                <h1>Authentik</h1>
+                <p class="guide-description">Open-source identity provider. SSO, OAuth2/OIDC, SAML, LDAP. Secure all your services with one login. Multi-factor authentication, passwordless login, user provisioning.</p>
+                <div class="guide-meta">
+                    <span class="guide-difficulty intermediate">Intermediate</span>
+                    <span class="guide-time">~30 min read</span>
+                    <span class="guide-updated">Updated 2026</span>
+                </div>
+            </header>
+
+            <section id="why-authentik">
+                <h2>Why Authentik?</h2>
+
+                <div class="reasons-grid">
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <h3>Single Sign-On (SSO)</h3>
+                        <p>One login for all services. OAuth2/OIDC, SAML 2.0, LDAP. Works with any compatible app.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </div>
+                        <h3>Multi-Factor Authentication</h3>
+                        <p>TOTP, WebAuthn/FIDO2 (YubiKey, TouchID), Email codes, SMS, Duo, Recovery codes.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </div>
+                        <h3>Passwordless Login</h3>
+                        <p>WebAuthn passkeys, email magic links. Modern auth without passwords.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <h3>User Provisioning (SCIM)</h3>
+                        <p>Automatically create/update/delete users in connected apps. Supports SCIM 2.0.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                        <h3>Flexible Policies</h3>
+                        <p>Flow-based authentication. Custom policies per app, group, user. Risk-based auth, geo-blocking.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <h3>Self-Hosted & Free</h3>
+                        <p>No per-user fees. Run on your hardware. Open source (MIT). Active community.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="architecture">
+                <h2>Architecture Overview</h2>
+
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th>Purpose</th>
+                                <th>Scaling</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Server (Django)</td>
+                                <td>Core logic, API, admin UI, flows</td>
+                                <td>Horizontal (stateless)</td>
+                            </tr>
+                            <tr>
+                                <td>Worker (Celery)</td>
+                                <td>Background tasks, email, LDAP sync</td>
+                                <td>Horizontal</td>
+                            </tr>
+                            <tr>
+                                <td>PostgreSQL</td>
+                                <td>Primary data store</td>
+                                <td>Vertical, read replicas</td>
+                            </tr>
+                            <tr>
+                                <td>Redis</td>
+                                <td>Cache, sessions, Celery broker</td>
+                                <td>Cluster mode</td>
+                            </tr>
+                            <tr>
+                                <td>Proxy (optional)</td>
+                                <td>SSL termination, rate limiting</td>
+                                <td>Horizontal</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="docker-setup">
+                <h2>Docker Deployment</h2>
+
+                <h3>Docker Compose (Production Ready)</h3>
+                <pre><code class="language-yaml">version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: authentik-postgres
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - authentik-postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+      - POSTGRES_USER=authentik
+      - POSTGRES_DB=authentik
+    secrets:
+      - postgres_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U authentik -d authentik"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: authentik-redis
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - authentik-redis:/data
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    image: ghcr.io/goauthentik/server:2024.12
+    container_name: authentik-server
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - authentik-media:/media
+      - authentik-templates:/templates
+    environment:
+      - AUTHENTIK_SECRET_KEY_FILE=/run/secrets/authentik_secret
+      - AUTHENTIK_POSTGRES_HOST=postgres
+      - AUTHENTIK_POSTGRES_USER=authentik
+      - AUTHENTIK_POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+      - AUTHENTIK_POSTGRES_DB=authentik
+      - AUTHENTIK_REDIS_HOST=redis
+      - AUTHENTIK_REDIS_PORT=6379
+      - AUTHENTIK_EMAIL_HOST=smtp.yourdomain.com
+      - AUTHENTIK_EMAIL_PORT=587
+      - AUTHENTIK_EMAIL_USERNAME_FILE=/run/secrets/email_user
+      - AUTHENTIK_EMAIL_PASSWORD_FILE=/run/secrets/email_pass
+      - AUTHENTIK_EMAIL_FROM=authentik@yourdomain.com
+      - AUTHENTIK_ERROR_REPORTING_ENABLED=false
+    secrets:
+      - authentik_secret
+      - postgres_password
+      - email_user
+      - email_pass
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "9000:9000"
+      - "9443:9443"
+
+  worker:
+    image: ghcr.io/goauthentik/server:2024.12
+    container_name: authentik-worker
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - authentik-media:/media
+      - authentik-templates:/templates
+    environment:
+      - AUTHENTIK_SECRET_KEY_FILE=/run/secrets/authentik_secret
+      - AUTHENTIK_POSTGRES_HOST=postgres
+      - AUTHENTIK_POSTGRES_USER=authentik
+      - AUTHENTIK_POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+      - AUTHENTIK_POSTGRES_DB=authentik
+      - AUTHENTIK_REDIS_HOST=redis
+      - AUTHENTIK_REDIS_PORT=6379
+    secrets:
+      - authentik_secret
+      - postgres_password
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: worker
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+networks:
+  homelab:
+    external: true
+
+volumes:
+  authentik-postgres:
+  authentik-redis:
+  authentik-media:
+  authentik-templates:
+
+secrets:
+  authentik_secret:
+    file: ./secrets/authentik_secret.txt
+  postgres_password:
+    file: ./secrets/postgres_password.txt
+  email_user:
+    file: ./secrets/email_user.txt
+  email_pass:
+    file: ./secrets/email_pass.txt</code></pre>
+
+                <h3>Generate Secrets</h3>
+                <pre><code class="language-bash">mkdir -p ~/authentik/secrets && cd ~/authentik/secrets
+
+# Secret key (64+ chars)
+openssl rand -base64 48 > authentik_secret.txt
+
+# Postgres password
+openssl rand -base64 32 > postgres_password.txt
+
+# Email credentials (if using SMTP)
+echo "your-email@domain.com" > email_user.txt
+echo "your-smtp-password" > email_pass.txt
+
+# Secure permissions
+chmod 600 *.txt</code></pre>
+
+                <h3>Deploy</h3>
+                <pre><code class="language-bash">cd ~/authentik
+# Save as docker-compose.yml
+docker compose up -d
+
+# Check logs
+docker compose logs -f server</code></pre>
+
+                <h3>Initial Setup</h3>
+                <ol class="steps">
+                    <li>Open <code>https://your-server:9443/if/flow/initial-setup/</code></li>
+                    <li>Create superuser (email, username, password)</li>
+                    <li>Configure domain: <code>auth.yourdomain.com</code></li>
+                    <li>Admin UI: <code>https://auth.yourdomain.com/if/admin/</code></li>
+                </ol>
+            </section>
+
+            <section id="core-concepts">
+                <h2>Core Concepts</h2>
+
+                <h3>Applications (Providers)</h3>
+                <p>What you're protecting. Each app gets a provider configuration.</p>
+                <ul class="feature-list">
+                    <li><strong>OAuth2/OpenID Connect:</strong> Modern apps (Nextcloud, Jellyfin, Grafana, etc.)</li>
+                    <li><strong>SAML 2.0:</strong> Enterprise apps (GitLab, Google Workspace, Office 365)</li>
+                    <li><strong>LDAP:</strong> Legacy apps, network devices, VPN</li>
+                    <li><strong>Proxy Provider:</strong> Protect apps that don't support SSO (forward auth)</li>
+                </ul>
+
+                <h3>Flows</h3>
+                <p>Visual authentication pipelines. Drag-and-drop stages: login, MFA, consent, user write, etc.</p>
+                <ul class="feature-list">
+                    <li><strong>Default flows:</strong> Login, Enrollment, Recovery, Unenrollment</li>
+                    <li><strong>Custom flows:</strong> Passwordless, conditional access, step-up auth</li>
+                    <li><strong>Stages:</strong> Authenticator validation, User login, Consent, Email, Captcha, etc.</li>
+                </ul>
+
+                <h3>Policies</h3>
+                <p>Reusable logic attached to flows, stages, or providers.</p>
+                <ul class="feature-list">
+                    <li><strong>Expression policies:</strong> Python-like expressions (user.groups.filter(name='admin').exists())</li>
+                    <li><strong>Reputation policies:</strong> IP reputation, geo-IP, failed attempts</li>
+                    <li><strong>Time policies:</strong> Time-based restrictions</li>
+                </ul>
+
+                <h3>Sources</h3>
+                <p>Where users come from.</p>
+                <ul class="feature-list">
+                    <li><strong>Local:</strong> Built-in user database</li>
+                    <li><strong>LDAP:</strong> Active Directory, OpenLDAP</li>
+                    <li><strong>OAuth:</strong> Google, GitHub, Microsoft, custom</li>
+                    <li><strong>SAML:</strong> External IdP</li>
+                </ul>
+            </section>
+
+            <section id="common-integrations">
+                <h2>Common Service Integrations</h2>
+
+                <h3>Nextcloud (OIDC)</h3>
+                <ol class="steps">
+                    <li>Authentik: Applications → Providers → Create → OAuth2/OpenID Provider</li>
+                    <li>Name: "Nextcloud", Redirect URI: <code>https://cloud.yourdomain.com/apps/oidc_login/</code></li>
+                    <li>Scopes: openid, profile, email, groups</li>
+                    <li>Note Client ID & Secret</li>
+                    <li>Nextcloud: Admin → Social Login → Add OIDC provider</li>
+                    <li>Enter Client ID, Secret, Discovery URL: <code>https://auth.yourdomain.com/application/o/nextcloud/.well-known/openid-configuration</code></li>
+                </ol>
+
+                <h3>Grafana (OIDC)</h3>
+                <pre><code class="language-ini"># grafana.ini
+[auth.generic_oauth]
+enabled = true
+name = Authentik
+allow_sign_up = true
+client_id = YOUR_CLIENT_ID
+client_secret = YOUR_CLIENT_SECRET
+scopes = openid profile email groups
+auth_url = https://auth.yourdomain.com/application/o/grafana/authorize/
+token_url = https://auth.yourdomain.com/application/o/grafana/token/
+api_url = https://auth.yourdomain.com/application/o/grafana/userinfo/
+role_attribute_path = contains(groups[*], 'grafana-admin') && 'Admin' || 'Viewer'
+</code></pre>
+
+                <h3>Jellyfin (OIDC)</h3>
+                <p>Dashboard → Authentication → Add "OpenID Connect" → Enter issuer, client ID, secret.</p>
+
+                <h3>Nginx Proxy Manager (Forward Auth)</h3>
+                <p>Use Authentik Proxy Provider to protect any service without native SSO.</p>
+                <ol class="steps">
+                    <li>Authentik: Applications → Providers → Create → Proxy Provider</li>
+                    <li>Forward Auth URL: <code>https://auth.yourdomain.com/outpost.goauthentik.io/</code></li>
+                    <li>In NPM: Advanced → Custom Nginx Config:</li>
+                </ol>
+                <pre><code class="language-nginx">location / {
+    auth_request https://auth.yourdomain.com/outpost.goauthentik.io/;
+    auth_request_set $user $upstream_http_x_authentik_user;
+    auth_request_set $groups $upstream_http_x_authentik_groups;
+    proxy_set_header X-Authentik-User $user;
+    proxy_set_header X-Authentik-Groups $groups;
+    # ... rest of proxy config
+}</code></pre>
+
+                <h3>Home Assistant (OIDC)</h3>
+                <pre><code class="language-yaml"># configuration.yaml
+homeassistant:
+  auth_providers:
+    - type: openid
+      client_id: YOUR_CLIENT_ID
+      client_secret: YOUR_CLIENT_SECRET
+      issuer_url: https://auth.yourdomain.com/application/o/home-assistant/
+      redirect_uri: https://ha.yourdomain.com/auth/external/callback</code></pre>
+            </section>
+
+            <section id="mfa-setup">
+                <h2>Multi-Factor Authentication Setup</h2>
+
+                <h3>Enforce MFA for All Users</h3>
+                <ol class="steps">
+                    <li>Flows → Default Authentication Flow → Edit</li>
+                    <li>Add stage: "Authenticator Validation"</li>
+                    <li>Configure: Device classes → TOTP, WebAuthn</li>
+                    <li>Bind to "Authentication" stage</li>
+                    <li>Users will be prompted to enroll on first login</li>
+                </ol>
+
+                <h3>WebAuthn (Passkeys/YubiKey)</h3>
+                <p>Settings → Authenticator Types → Enable WebAuthn. Configure Relying Party ID (your domain).</p>
+
+                <h3>Recovery Codes</h3>
+                <p>Users can generate recovery codes in their profile. Admins can view/reset in admin UI.</p>
+            </section>
+
+            <section id="backup">
+                <h2>Backup & Restore</h2>
+
+                <h3>Backup Script</h3>
+                <pre><code class="language-bash">#!/bin/bash
+# /usr/local/bin/backup-authentik.sh
+set -euo pipefail
+
+BACKUP_DIR="/mnt/backups/authentik"
+DATE=$(date +%F_%H-%M)
+RETENTION_DAYS=30
+
+mkdir -p "$BACKUP_DIR"
+
+# Database dump
+docker exec authentik-postgres pg_dump -U authentik authentik | gzip > "$BACKUP_DIR/db_$DATE.sql.gz"
+
+# Media files (certificates, custom templates)
+docker run --rm \
+  -v authentik-media:/media \
+  -v "$BACKUP_DIR":/backup \
+  alpine tar czf /backup/media_$DATE.tar.gz -C /media .
+
+# Cleanup
+find "$BACKUP_DIR" -type f -mtime +$RETENTION_DAYS -delete
+
+echo "Authentik backup completed: $DATE"</code></pre>
+
+                <h3>Restore</h3>
+                <pre><code class="language-bash"># 1. Stop services
+docker compose down
+
+# 2. Restore database
+gunzip -c db_2026-01-15_03-00.sql.gz | docker exec -i authentik-postgres psql -U authentik -d authentik
+
+# 3. Restore media
+docker run --rm \
+  -v authentik-media:/media \
+  -v /mnt/backups/authentik:/backup \
+  alpine tar xzf /backup/media_2026-01-15_03-00.tar.gz -C /media
+
+# 4. Start
+docker compose up -d</code></pre>
+            </section>
+
+            <section id="troubleshooting">
+                <h2>Troubleshooting</h2>
+
+                <div class="troubleshooting-grid">
+                    <div class="issue-card">
+                        <h4>Cannot access admin UI</h4>
+                        <pre><code class="language-bash"># Check if server is healthy
+docker logs authentik-server | tail -50
+
+# Verify secret key matches in all containers
+docker exec authentik-server cat /run/secrets/authentik_secret
+docker exec authentik-worker cat /run/secrets/authentik_secret</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>OIDC redirect URI mismatch</h4>
+                        <pre><code class="language-bash"># In Provider settings, ensure redirect URIs match EXACTLY:
+# https://app.yourdomain.com/callback
+# (no trailing slash if not in config)</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Email not sending</h4>
+                        <pre><code class="language-bash"># Check worker logs
+docker logs authentik-worker | grep -i email
+
+# Test SMTP from container
+docker exec authentik-worker python -c "
+import smtplib
+s = smtplib.SMTP('smtp.yourdomain.com', 587)
+s.starttls()
+s.login('user', 'pass')
+print('SMTP OK')
+"</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>LDAP sync failing</h4>
+                        <pre><code class="language-bash"># Check LDAP source configuration
+# Test connection in Authentik UI: Sources → LDAP → Test Connection
+
+# Common issues:
+# - Wrong bind DN format (cn=admin,dc=example,dc=com)
+# - TLS/SSL port (636 vs 389 + StartTLS)
+# - Certificate verification (disable for self-signed)</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Slow login / timeouts</h4>
+                        <pre><code class="language-bash"># Check Redis memory
+docker exec authentik-redis redis-cli INFO memory
+
+# Increase worker count
+# In docker-compose: deploy.replicas: 2 for worker
+
+# Check PostgreSQL connections
+docker exec authentik-postgres psql -U authentik -c "SELECT count(*) FROM pg_stat_activity;"</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="guide-navigation">
+                <a href="../index.html#guides" class="btn btn-secondary">← Back to Guides</a>
+                <a href="vlans.html" class="btn btn-primary">Next: VLANs & Segmentation →</a>
+            </nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <path d="M8 17h8M12 17v-5"/>
+                        </svg>
+                        <span>HomeLab Guide</span>
+                    </a>
+                    <p>Free, open-source guides for building your own home lab. No ads, no tracking, just knowledge.</p>
+                </div>
+                <nav class="footer-nav">
+                    <div class="footer-section">
+                        <h4>Guides</h4>
+                        <ul>
+                            <li><a href="basics.html">Home Lab Basics</a></li>
+                            <li><a href="docker.html">Docker Fundamentals</a></li>
+                            <li><a href="jellyfin.html">Jellyfin Server</a></li>
+                            <li><a href="reverse-proxy.html">Reverse Proxy & SSL</a></li>
+                            <li><a href="backup.html">Backup Strategy</a></li>
+                            <li><a href="vpn.html">Remote Access (VPN)</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="jellyfin.html">Jellyfin</a></li>
+                            <li><a href="nextcloud.html">Nextcloud</a></li>
+                            <li><a href="homeassistant.html">Home Assistant</a></li>
+                            <li><a href="portainer.html">Portainer</a></li>
+                            <li><a href="uptime-kuma.html">Uptime Kuma</a></li>
+                            <li><a href="authentik.html">Authentik</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Networking</h4>
+                        <ul>
+                            <li><a href="vlans.html">VLANs & Segmentation</a></li>
+                            <li><a href="dns.html">DNS & Local Domains</a></li>
+                            <li><a href="firewall.html">Firewall Rules</a></li>
+                            <li><a href="security.html">Security Hardening</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with ❤️ for the self-hosting community. <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a></p>
+                <p class="license">Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>

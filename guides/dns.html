@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to DNS and local domains for home labs. Set up Pi-hole or AdGuard Home for ad-blocking and local DNS. Use .local or custom TLD for services.">
+    <title>DNS & Local Domains - HomeLab Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="../index.html" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 17h8M12 17v-5"/>
+                </svg>
+                <span>HomeLab Guide</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <ul class="nav-links">
+                <li><a href="../index.html#guides">Guides</a></li>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../index.html#hardware">Hardware</a></li>
+                <li><a href="../index.html#networking">Networking</a></li>
+                <li><a href="../index.html#resources">Resources</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="guide-page">
+        <article class="guide-content container">
+            <header class="guide-header">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="../index.html">Home</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <a href="../index.html#guides">Guides</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <span aria-current="page">DNS & Local Domains</span>
+                </nav>
+                <h1>DNS & Local Domains</h1>
+                <p class="guide-description">Set up Pi-hole or AdGuard Home for ad-blocking and local DNS. Use custom TLD for services. Split-horizon DNS for internal/external resolution.</p>
+                <div class="guide-meta">
+                    <span class="guide-difficulty beginner">Beginner</span>
+                    <span class="guide-time">~20 min read</span>
+                    <span class="guide-updated">Updated 2026</span>
+                </div>
+            </header>
+
+            <section id="why-local-dns">
+                <h2>Why Local DNS?</h2>
+                <div class="reasons-grid">
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                        </div>
+                        <h3>Human-Readable Names</h3>
+                        <p>Access services via <code>jellyfin.home.arpa</code> instead of <code>192.168.1.50:8096</code>.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </div>
+                        <h3>Ad & Tracker Blocking</h3>
+                        <p>Pi-hole/AdGuard block ads network-wide. No client configuration needed.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <h3>Split-Horizon DNS</h3>
+                        <p>Internal IPs for local access, public IPs for remote. Same hostname, correct routing.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <h3>Certificate Validation</h3>
+                        <p>Let's Encrypt via DNS-01 challenge. Wildcard certs for *.home.arpa.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="choose-solution">
+                <h2>Choose Your DNS Solution</h2>
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Pi-hole</th>
+                                <th>AdGuard Home</th>
+                                <th>Technitium</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>UI/UX</td>
+                                <td>Functional, dated</td>
+                                <td>Modern, polished</td>
+                                <td>Advanced, complex</td>
+                            </tr>
+                            <tr>
+                                <td>Ad Blocking</td>
+                                <td>Excellent (gravity)</td>
+                                <td>Excellent (built-in lists)</td>
+                                <td>Good</td>
+                            </tr>
+                            <tr>
+                                <td>Local DNS (Custom Records)</td>
+                                <td>Local DNS tab</td>
+                                <td>DNS Rewrites</td>
+                                <td>Zone editor</td>
+                            </tr>
+                            <tr>
+                                <td>DHCP Server</td>
+                                <td>Yes (optional)</td>
+                                <td>Yes</td>
+                                <td>Yes (full featured)</td>
+                            </tr>
+                            <tr>
+                                <td>DoH/DoT/DoQ</td>
+                                <td>Via cloudflared</td>
+                                <td>Native</td>
+                                <td>Native</td>
+                            </tr>
+                            <tr>
+                                <td>Client Groups/Policies</td>
+                                <td>Groups + adlists</td>
+                                <td>Client profiles</td>
+                                <td>Advanced policies</td>
+                            </tr>
+                            <tr>
+                                <td>Resource Usage</td>
+                                <td>Low (PHP + FTL)</td>
+                                <td>Low (Go)</td>
+                                <td>Medium (Go + Web)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="callout callout-tip">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <div>
+                        <strong>Recommendation:</strong> <strong>AdGuard Home</strong> for most users - modern UI, native DoH/DoT, easy setup. <strong>Pi-hole</strong> if you want mature community, gravity lists, or need DHCP. <strong>Technitium</strong> for power users needing full DNS server features.
+                    </div>
+                </div>
+            </section>
+
+            <section id="adguard-setup">
+                <h2>AdGuard Home Deployment</h2>
+
+                <h3>Docker Compose</h3>
+                <pre><code class="language-yaml">version: '3.8'
+
+services:
+  adguardhome:
+    image: adguard/adguardhome:latest
+    container_name: adguardhome
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - adguard-work:/opt/adguardhome/work
+      - adguard-conf:/opt/adguardhome/conf
+    ports:
+      - "53:53/tcp"      # DNS
+      - "53:53/udp"      # DNS
+      - "67:67/udp"      # DHCP (optional)
+      - "68:68/tcp"      # DHCP (optional)
+      - "80:80/tcp"      # HTTP (setup only)
+      - "443:443/tcp"    # HTTPS (DoH)
+      - "853:853/tcp"    # DoT
+      - "3000:3000/tcp"  # Admin UI
+    environment:
+      - TZ=America/New_York
+    cap_add:
+      - NET_ADMIN  # For binding to port 53
+
+networks:
+  homelab:
+    external: true
+
+volumes:
+  adguard-work:
+  adguard-conf:</code></pre>
+
+                <h3>Deploy</h3>
+                <pre><code class="language-bash">mkdir -p ~/adguard && cd ~/adguard
+# Save as docker-compose.yml
+docker compose up -d
+
+# Check logs
+docker compose logs -f adguardhome</code></pre>
+
+                <h3>Initial Setup (Web UI)</h3>
+                <ol class="steps">
+                    <li>Open <code>http://your-server:3000</code></li>
+                    <li>Port 53 check → "Use port 53" (if available)</li>
+                    <li>Admin username/password</li>
+                    <li>Finish → Dashboard loads</li>
+                </ol>
+            </section>
+
+            <section id="adguard-config">
+                <h2>AdGuard Home Configuration</h2>
+
+                <h3>Upstream DNS (Encrypted)</h3>
+                <p>Settings → DNS Settings → Upstream DNS Servers:</p>
+                <pre><code class="text"># DoH (DNS over HTTPS)
+https://dns.google/dns-query
+https://cloudflare-dns.com/dns-query
+https://dns.quad9.net/dns-query
+
+# DoT (DNS over TLS) - specify in DoT section
+tls://dns.google
+tls://1.1.1.1
+tls://9.9.9.9</code></pre>
+                <p>Enable "Bootstrap DNS" for initial resolution. Enable "Use upstream DNS servers concurrently" for speed.</p>
+
+                <h3>Local DNS Records (DNS Rewrites)</h3>
+                <p>Settings → DNS Rewrites → Add rewrite:</p>
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Domain</th>
+                                <th>Answer</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>jellyfin.home.arpa</td>
+                                <td>10.10.10.10</td>
+                                <td>Jellyfin server</td>
+                            </tr>
+                            <tr>
+                                <td>nextcloud.home.arpa</td>
+                                <td>10.10.10.11</td>
+                                <td>Nextcloud</td>
+                            </tr>
+                            <tr>
+                                <td>homeassistant.home.arpa</td>
+                                <td>10.10.10.12</td>
+                                <td>Home Assistant</td>
+                            </tr>
+                            <tr>
+                                <td>portainer.home.arpa</td>
+                                <td>10.10.10.13</td>
+                                <td>Portainer</td>
+                            </tr>
+                            <tr>
+                                <td>uptime.home.arpa</td>
+                                <td>10.10.10.14</td>
+                                <td>Uptime Kuma</td>
+                            </tr>
+                            <tr>
+                                <td>auth.home.arpa</td>
+                                <td>10.10.10.15</td>
+                                <td>Authentik</td>
+                            </tr>
+                            <tr>
+                                <td>*.home.arpa</td>
+                                <td>10.10.10.10</td>
+                                <td>Wildcard to reverse proxy</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Blocklists</h3>
+                <p>Settings → DNS Blocklists → Enable recommended:</p>
+                <ul class="feature-list">
+                    <li>AdGuard DNS filter</li>
+                    <li>AdAway</li>
+                    <li>OISD (combined, frequently updated)</li>
+                    <li>HaGeZi Pro (multi-purpose)</li>
+                </ul>
+                <p>Add custom: <code>https://raw.githubusercontent.com/blocklistproject/Lists/master/ads.txt</code></p>
+
+                <h3>Client Configuration</h3>
+                <p>Settings → Client Configuration → Create profiles:</p>
+                <ul class="feature-list">
+                    <li><strong>Default:</strong> All blocklists enabled</li>
+                    <li><strong>Kids:</strong> + Adult content blocklist, SafeSearch enforced</li>
+                    <li><strong>IoT:</strong> Minimal blocking (may break device updates)</li>
+                    <li><strong>Unfiltered:</strong> No blocking (for troubleshooting)</li>
+                </ul>
+                <p>Assign clients by IP/MAC in "Clients" page.</p>
+            </section>
+
+            <section id="pihole-setup">
+                <h2>Pi-hole Deployment (Alternative)</h2>
+
+                <h3>Docker Compose</h3>
+                <pre><code class="language-yaml">version: '3.8'
+
+services:
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - pihole-etc:/etc/pihole
+      - pihole-dnsmasq:/etc/dnsmasq.d
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"      # DHCP
+      - "80:80/tcp"      # Web UI
+      - "443:443/tcp"    # HTTPS (optional)
+    environment:
+      - TZ=America/New_York
+      - WEBPASSWORD_FILE=/run/secrets/pihole_password
+      - DNS1=1.1.1.1
+      - DNS2=8.8.8.8
+      - CONDITIONAL_FORWARDING=1
+      - CONDITIONAL_FORWARDING_DOMAIN=home.arpa
+      - CONDITIONAL_FORWARDING_IP=10.10.10.1
+    secrets:
+      - pihole_password
+    cap_add:
+      - NET_ADMIN
+
+networks:
+  homelab:
+    external: true
+
+volumes:
+  pihole-etc:
+  pihole-dnsmasq:
+
+secrets:
+  pihole_password:
+    file: ./secrets/pihole_password.txt</code></pre>
+
+                <h3>Local DNS (Custom.list)</h3>
+                <pre><code class="language-bash"># In Pi-hole container: /etc/pihole/custom.list
+10.10.10.10  jellyfin.home.arpa
+10.10.10.11  nextcloud.home.arpa
+10.10.10.12  homeassistant.home.arpa
+10.10.10.13  portainer.home.arpa
+10.10.10.14  uptime.home.arpa
+10.10.10.15  auth.home.arpa
+
+# Regenerate gravity
+pihole restartdns reload-lists</code></pre>
+            </section>
+
+            <section id="domain-choice">
+                <h2>Choosing a Local TLD</h2>
+
+                <h3>Recommended: <code>.home.arpa</code> (RFC 8375)</h3>
+                <ul class="feature-list">
+                    <li>Reserved for home networks - never conflicts with public DNS</li>
+                    <li>Supported by mDNS/DNS-SD (Bonjour, Avahi)</li>
+                    <li>Works with Let's Encrypt DNS-01 (via ACME DNS)</li>
+                    <li>Standard, future-proof</li>
+                </ul>
+
+                <h3>Alternatives</h3>
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>TLD</th>
+                                <th>Pros</th>
+                                <th>Cons</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>.local</code></td>
+                                <td>mDNS native, works out of box</td>
+                                <td>Conflict with .local TLD, not for authoritative DNS</td>
+                            </tr>
+                            <tr>
+                                <td><code>.lan</code>, <code>.home</code>, <code>.internal</code></td>
+                                <td>Short, memorable</td>
+                                <td>Not reserved - could become public TLD</td>
+                            </tr>
+                            <tr>
+                                <td><code>.home.arpa</code></td>
+                                <td>RFC reserved, standard</td>
+                                <td>Longer to type</td>
+                            </tr>
+                            <tr>
+                                <td>Custom (<code>homelab.internal</code>)</td>
+                                <td>Full control, can delegate</td>
+                                <td>Must own domain, more complex</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="split-horizon">
+                <h2>Split-Horizon DNS (Internal vs External)</h2>
+
+                <h3>Scenario</h3>
+                <p>Same hostname resolves to:</p>
+                <ul class="feature-list">
+                    <li><strong>Internal:</strong> <code>jellyfin.example.com</code> → <code>10.10.10.10</code> (LAN IP)</li>
+                    <li><strong>External:</strong> <code>jellyfin.example.com</code> → <code>203.0.113.5</code> (Public IP)</li>
+                </ul>
+
+                <h3>Implementation: AdGuard Home</h3>
+                <p>Settings → DNS Rewrites - only applies to clients using AdGuard as DNS.</p>
+                <p>For public clients: Cloudflare/Route53 DNS records point to public IP.</p>
+
+                <h3>Implementation: Cloudflare Tunnel + Split DNS</h3>
+                <pre><code class="language-yaml"># cloudflared config.yml
+tunnel: your-tunnel-id
+credentials-file: /etc/cloudflared/creds.json
+ingress:
+  - hostname: jellyfin.example.com
+    service: http://10.10.10.10:8096
+  - hostname: nextcloud.example.com
+    service: http://10.10.10.11:80
+  - service: http_status:404</code></pre>
+                <p>Internal clients use AdGuard (local IP). External clients hit Cloudflare → Tunnel → Service.</p>
+            </section>
+
+            <section id="dhcp">
+                <h2>DHCP Integration</h2>
+
+                <h3>Option 1: Router Handles DHCP, AdGuard/Pi-hole for DNS</h3>
+                <ul class="feature-list">
+                    <li>Router DHCP → Set DNS to AdGuard IP (10.10.10.5)</li>
+                    <li>Simple, router manages leases</li>
+                    <li>AdGuard sees all clients by IP</li>
+                </ul>
+
+                <h3>Option 2: AdGuard/Pi-hole Handles DHCP</h3>
+                <ul class="feature-list">
+                    <li>Disable DHCP on router</li>
+                    <li>AdGuard: Settings → DHCP → Enable, set range</li>
+                    <li>Clients get hostname in AdGuard automatically</li>
+                    <li>Better client identification in logs</li>
+                </ul>
+
+                <h3>Option 3: Kea DHCP (Advanced)</h3>
+                <p>High-performance DHCP server. Integrates with AdGuard/Pi-hole via API for dynamic DNS updates.</p>
+            </section>
+
+            <section id="client-config">
+                <h2>Client Configuration</h2>
+
+                <h3>Automatic (DHCP)</h3>
+                <p>Set DNS server in DHCP options to AdGuard/Pi-hole IP. All clients auto-configure.</p>
+
+                <h3>Manual</h3>
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>OS</th>
+                                <th>Setting</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Windows</td>
+                                <td>Settings → Network → DNS → Manual: 10.10.10.5</td>
+                            </tr>
+                            <tr>
+                                <td>macOS</td>
+                                <td>System Settings → Network → DNS → + 10.10.10.5</td>
+                            </tr>
+                            <tr>
+                                <td>Linux (systemd-resolved)</td>
+                                <td><code>DNS=10.10.10.5</code> in /etc/systemd/resolved.conf</td>
+                            </tr>
+                            <tr>
+                                <td>iOS</td>
+                                <td>WiFi → ⓘ → Configure DNS → Manual → 10.10.10.5</td>
+                            </tr>
+                            <tr>
+                                <td>Android</td>
+                                <td>WiFi → Modify → Advanced → DNS → 10.10.10.5</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Encrypted DNS (DoH/DoT) on Clients</h3>
+                <ul class="feature-list">
+                    <li>Firefox: Settings → Network Settings → Enable DNS over HTTPS → Custom: <code>https://adguard.home.arpa/dns-query</code></li>
+                    <li>Chrome: <code>chrome://flags/#dns-over-https</code> → Custom: <code>https://adguard.home.arpa/dns-query</code></li>
+                    <li>iOS/macOS: Profile with DoH template</li>
+                </ul>
+            </section>
+
+            <section id="troubleshooting-dns">
+                <h2>Troubleshooting</h2>
+                <div class="troubleshooting-grid">
+                    <div class="issue-card">
+                        <h4>DNS not resolving</h4>
+                        <pre><code class="language-bash"># Test from client
+nslookup jellyfin.home.arpa 10.10.10.5
+dig @10.10.10.5 jellyfin.home.arpa
+
+# Test upstream
+dig @1.1.1.1 google.com
+
+# Check AdGuard logs
+docker logs adguardhome | grep -i error</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Slow DNS resolution</h4>
+                        <pre><code class="language-bash"># Enable parallel upstream queries
+# Reduce blocklist count
+# Check upstream latency: dig @1.1.1.1 google.com +stats
+# Consider local unbound recursive resolver</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Local hostnames not resolving</h4>
+                        <pre><code class="language-bash"># Verify DNS rewrites / custom.list entries
+# Check for typos (trailing dots, case sensitivity)
+# Flush client DNS cache:
+# Windows: ipconfig /flushdns
+# macOS: sudo dscacheutil -flushcache
+# Linux: systemd-resolve --flush-caches</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Port 53 conflicts</h4>
+                        <pre><code class="language-bash"># Check what's on port 53
+ss -ulpn | grep :53
+# systemd-resolved often binds 127.0.0.53:53
+# Disable: systemctl disable --now systemd-resolved
+# Or change AdGuard port to 5353, use iptables redirect</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Android "Private DNS" bypassing AdGuard</h4>
+                        <pre><code class="language-bash"># Android 9+ uses DoT by default
+# Settings → Network → Private DNS → Off
+# Or set to: adguard.home.arpa (if DoT enabled on AdGuard)</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="guide-navigation">
+                <a href="../index.html#guides" class="btn btn-secondary">← Back to Guides</a>
+                <a href="firewall.html" class="btn btn-primary">Next: Firewall Rules →</a>
+            </nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <path d="M8 17h8M12 17v-5"/>
+                        </svg>
+                        <span>HomeLab Guide</span>
+                    </a>
+                    <p>Free, open-source guides for building your own home lab. No ads, no tracking, just knowledge.</p>
+                </div>
+                <nav class="footer-nav">
+                    <div class="footer-section">
+                        <h4>Guides</h4>
+                        <ul>
+                            <li><a href="basics.html">Home Lab Basics</a></li>
+                            <li><a href="docker.html">Docker Fundamentals</a></li>
+                            <li><a href="jellyfin.html">Jellyfin Server</a></li>
+                            <li><a href="reverse-proxy.html">Reverse Proxy & SSL</a></li>
+                            <li><a href="backup.html">Backup Strategy</a></li>
+                            <li><a href="vpn.html">Remote Access (VPN)</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="jellyfin.html">Jellyfin</a></li>
+                            <li><a href="nextcloud.html">Nextcloud</a></li>
+                            <li><a href="homeassistant.html">Home Assistant</a></li>
+                            <li><a href="portainer.html">Portainer</a></li>
+                            <li><a href="uptime-kuma.html">Uptime Kuma</a></li>
+                            <li><a href="authentik.html">Authentik</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Networking</h4>
+                        <ul>
+                            <li><a href="vlans.html">VLANs & Segmentation</a></li>
+                            <li><a href="dns.html">DNS & Local Domains</a></li>
+                            <li><a href="firewall.html">Firewall Rules</a></li>
+                            <li><a href="security.html">Security Hardening</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with ❤️ for the self-hosting community. <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a></p>
+                <p class="license">Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to firewall rules for home labs. Default deny inbound. Allow only what's needed. Use UFW, firewalld, or OPNsense/pfSense for advanced rules.">
+    <title>Firewall Rules - HomeLab Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="../index.html" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 17h8M12 17v-5"/>
+                </svg>
+                <span>HomeLab Guide</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <ul class="nav-links">
+                <li><a href="../index.html#guides">Guides</a></li>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../index.html#hardware">Hardware</a></li>
+                <li><a href="../index.html#networking">Networking</a></li>
+                <li><a href="../index.html#resources">Resources</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="guide-page">
+        <article class="guide-content container">
+            <header class="guide-header">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="../index.html">Home</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <a href="../index.html#guides">Guides</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <span aria-current="page">Firewall Rules</span>
+                </nav>
+                <h1>Firewall Rules</h1>
+                <p class="guide-description">Default deny inbound. Allow only what's needed. Use UFW, firewalld, or OPNsense/pfSense for advanced rules. Layer 7 filtering with CrowdSec.</p>
+                <div class="guide-meta">
+                    <span class="guide-difficulty intermediate">Intermediate</span>
+                    <span class="guide-time">~25 min read</span>
+                    <span class="guide-updated">Updated 2026</span>
+                </div>
+            </header>
+
+            <section id="firewall-basics">
+                <h2>Firewall Fundamentals</h2>
+
+                <h3>Default Deny Policy</h3>
+                <div class="callout callout-warning">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <div>
+                        <strong>Golden Rule:</strong> Block everything by default. Explicitly allow only required traffic. This applies at every layer: network, host, application.
+                    </div>
+                </div>
+
+                <h3>Rule Processing Order</h3>
+                <ol class="feature-list">
+                    <li><strong>First match wins</strong> - Rules evaluated top to bottom</li>
+                    <li><strong>Stateful inspection</strong> - Return traffic for allowed connections auto-permitted</li>
+                    <li><strong>Implicit deny</strong> - Last rule blocks anything not matched</li>
+                </ol>
+
+                <h3>Where to Filter</h3>
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Layer</th>
+                                <th>Tool</th>
+                                <th>Scope</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Network Edge</td>
+                                <td>OPNsense, pfSense, Router</td>
+                                <td>All traffic entering/leaving LAN</td>
+                                <td>VLAN isolation, WAN rules, GeoIP</td>
+                            </tr>
+                            <tr>
+                                <td>Host</td>
+                                <td>UFW, firewalld, nftables</td>
+                                <td>Single server/container host</td>
+                                <td>Service ports, Docker isolation</td>
+                            </tr>
+                            <tr>
+                                <td>Container</td>
+                                <td>Docker networks, CNI plugins</td>
+                                <td>Inter-container traffic</td>
+                                <td>Microservice segmentation</td>
+                            </tr>
+                            <tr>
+                                <td>Application</td>
+                                <td>CrowdSec, ModSecurity, Authelia</td>
+                                <td>HTTP/L7 traffic</td>
+                                <td>WAF, bot detection, auth</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="edge-firewall">
+                <h2>Edge Firewall (OPNsense / pfSense)</h2>
+
+                <h3>WAN Interface Rules</h3>
+                <pre><code class="language-text"># Default: Block all inbound (implicit)
+# Explicit allows (top to bottom):
+
+# 1. Allow established/related (auto-handled by state table)
+
+# 2. VPN Access (WireGuard/Tailscale)
+Pass  UDP  WAN  *  →  WAN_IP  51820  (WireGuard)
+Pass  TCP  WAN  *  →  WAN_IP  443    (Tailscale/derper)
+
+# 3. Cloudflare Tunnel (outbound only - no inbound ports!)
+# No WAN rules needed - tunnel initiates outbound
+
+# 4. Port Forwards (if absolutely necessary)
+# DNAT: WAN:443 → ReverseProxy:443
+# Associated filter rule auto-created on WAN
+
+# 5. Block known bad (pfBlockerNG / Aliases)
+Block TCP/UDP WAN * → WAN_IP * (GeoIP: CN, RU, KP, etc.)
+Block TCP/UDP WAN * → WAN_IP * (Spamhaus DROP, Emerging Threats)</code></pre>
+
+                <h3>LAN/VLAN Interface Rules (Per Interface)</h3>
+                <pre><code class="language-text"># MGMT Interface (10.10.10.0/24)
+Pass  *  MGMT_net  →  *              # Full access
+Block *  MGMT_net  →  RFC1918        # Except other LANs (optional)
+
+# SERVERS Interface (10.10.10.0/24)
+Pass  TCP  SERVERS_net → TRUSTED_net  80,443,8096,8123,9000,3001  # Service ports
+Pass  UDP  SERVERS_net → DNS_IP       53                           # DNS
+Pass  *    SERVERS_net → VPN_net      *                            # VPN access
+Block *    SERVERS_net → IOT_net      *                            # No IoT
+Block *    SERVERS_net → GUEST_net    *                            # No Guest
+
+# TRUSTED Interface (10.10.20.0/24)
+Pass  *  TRUSTED_net → SERVERS_net    *       # Access services
+Pass  *  TRUSTED_net → MGMT_net       22,443  # Admin access
+Pass  *  TRUSTED_net → VPN_net        *       # VPN access
+Pass  *  TRUSTED_net → WAN            *       # Internet
+Block *  TRUSTED_net → IOT_net        *       # No direct IoT
+Block *  TRUSTED_net → GUEST_net      *       # No Guest
+
+# IOT Interface (10.10.30.0/24)
+Pass  UDP  IOT_net   → DNS_IP         53      # DNS only
+Pass  UDP  IOT_net   → NTP_IP         123     # Time sync
+Pass  TCP  IOT_net   → UPDATE_SERVERS 443     # Specific update servers
+Block *    IOT_net   → RFC1918        *       # No LAN access
+Pass  *    IOT_net   → WAN            *       # Internet (restricted)
+
+# GUEST Interface (10.10.40.0/24)
+Pass  *  GUEST_net → WAN              *       # Internet only
+Block *  GUEST_net → RFC1918          *       # No LAN access
+
+# VPN Interface (10.10.50.0/24)
+Pass  *  VPN_net   → MGMT_net         *       # Full management
+Pass  *  VPN_net   → SERVERS_net      *       # All services
+Pass  *  VPN_net   → TRUSTED_net      *       # Trusted devices</code></pre>
+
+                <h3>Floating Rules (Advanced)</h3>
+                <ul class="feature-list">
+                    <li><strong>Match on any interface</strong> - For rules applying to multiple VLANs</li>
+                    <li><strong>Quick</strong> - Stop processing on match (like normal rules)</li>
+                    <li><strong>Direction: in/out</strong> - Control flow direction</li>
+                    <li>Use for: QoS, VPN kill-switch, logging suspicious outbound</li>
+                </ul>
+            </section>
+
+            <section id="host-firewall">
+                <h2>Host Firewall (UFW / firewalld)</h2>
+
+                <h3>UFW (Ubuntu/Debian)</h3>
+                <pre><code class="language-bash"># Reset to defaults
+sudo ufw reset
+
+# Default policies
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw default deny routed
+
+# Allow SSH (adjust for your MGMT network)
+sudo ufw allow from 10.10.10.0/24 to any port 22 proto tcp comment 'SSH from MGMT'
+
+# Allow Docker host management (if needed)
+sudo ufw allow from 10.10.10.0/24 to any port 2376 proto tcp comment 'Docker TLS'
+
+# Allow specific service ports from TRUSTED
+sudo ufw allow from 10.10.20.0/24 to any port 8096 proto tcp comment 'Jellyfin'
+sudo ufw allow from 10.10.20.0/24 to any port 8123 proto tcp comment 'Home Assistant'
+sudo ufw allow from 10.10.20.0/24 to any port 9000 proto tcp comment 'Portainer'
+
+# Allow inter-host communication (cluster)
+sudo ufw allow from 10.10.10.0/24 to any port 7946 proto tcp comment 'Serf LAN'
+sudo ufw allow from 10.10.10.0/24 to any port 7946 proto udp comment 'Serf WAN'
+sudo ufw allow from 10.10.10.0/24 to any port 4789 proto udp comment 'VXLAN'
+
+# Enable logging
+sudo ufw logging medium
+
+# Enable
+sudo ufw enable
+
+# Status
+sudo ufw status verbose
+sudo ufw status numbered  # For deleting rules</code></pre>
+
+                <h3>firewalld (RHEL/Fedora/Rocky)</h3>
+                <pre><code class="language-bash"># Zones: drop, block, public, external, internal, trusted, home, work
+# Use 'internal' for LAN, 'external' for WAN
+
+# Set default zone for interface
+sudo firewall-cmd --permanent --zone=internal --change-interface=eth0
+sudo firewall-cmd --permanent --zone=external --change-interface=eth1
+
+# Internal zone (LAN) - allow specific services
+sudo firewall-cmd --permanent --zone=internal --add-service=ssh
+sudo firewall-cmd --permanent --zone=internal --add-source=10.10.10.0/24
+sudo firewall-cmd --permanent --zone=internal --add-source=10.10.20.0/24
+
+# Rich rules for specific ports
+sudo firewall-cmd --permanent --zone=internal \
+  --add-rich-rule='rule family=ipv4 source address=10.10.20.0/24 port port=8096 protocol=tcp accept'
+
+# Docker zone (if using firewalld with Docker)
+sudo firewall-cmd --permanent --zone=trusted --add-interface=docker0
+
+# Reload
+sudo firewall-cmd --reload
+
+# List rules
+sudo firewall-cmd --list-all-zones</code></pre>
+
+                <h3>nftables (Modern, Unified)</h3>
+                <pre><code class="language-bash"># /etc/nftables.conf
+#!/usr/sbin/nft -f
+
+flush ruleset
+
+table inet filter {
+    chain input {
+        type filter hook input priority 0; policy drop;
+
+        # Allow loopback
+        iif "lo" accept
+
+        # Allow established/related
+        ct state established,related accept
+
+        # ICMP
+        ip protocol icmp accept
+        ip6 protocol icmpv6 accept
+
+        # SSH from MGMT only
+        ip saddr 10.10.10.0/24 tcp dport 22 accept
+
+        # Services from TRUSTED
+        ip saddr 10.10.20.0/24 tcp dport { 8096, 8123, 9000, 3001 } accept
+
+        # Docker/Container traffic
+        iif "docker0" accept
+        ip saddr 10.10.10.0/24 tcp dport 7946 accept
+        ip saddr 10.10.10.0/24 udp dport 7946 accept
+        ip saddr 10.10.10.0/24 udp dport 4789 accept
+
+        # Log dropped
+        limit rate 5/minute log prefix "DROP_INPUT: " flags all
+    }
+
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+
+        # Container forwarding
+        ct state established,related accept
+        iif "docker0" oif "eth0" accept
+        iif "eth0" oif "docker0" ct state related,established accept
+    }
+
+    chain output {
+        type filter hook output priority 0; policy accept;
+    }
+}</code></pre>
+            </section>
+
+            <section id="docker-firewall">
+                <h2>Docker & Container Network Security</h2>
+
+                <h3>Docker Default Behavior</h3>
+                <ul class="feature-list">
+                    <li>Docker creates `DOCKER-USER` chain (runs before DOCKER chain)</li>
+                    <li>Published ports (`-p 8080:80`) bypass UFW - insert rules in `DOCKER-USER`</li>
+                    <li>Bridge network: containers talk freely by default</li>
+                </ul>
+
+                <h3>Secure Docker with UFW</h3>
+                <pre><code class="language-bash"># /etc/ufw/after.rules (or create /etc/ufw/applications.d/docker)
+
+# Don't delete the 'COMMIT' line
+*filter
+:DOCKER-USER - [0:0]
+
+# Allow only from TRUSTED VLAN to published ports
+-A DOCKER-USER -i ext_if ! -s 10.10.20.0/24 -j DROP
+
+# Allow inter-container on user-defined networks
+-A DOCKER-USER -i br-+ -o br-+ -j ACCEPT
+
+# Block container → host (except specific)
+-A DOCKER-USER -i br-+ -d 10.10.10.0/24 -j DROP
+
+COMMIT</code></pre>
+
+                <h3>Rootless Docker / Podman</h3>
+                <pre><code class="language-bash"># Rootless uses slirp4netns / pasta - no NET_ADMIN needed
+# Podman: use CNI plugins for network policy
+# /etc/cni/net.d/10-podman-bridge.conflist
+{
+  "cniVersion": "0.4.0",
+  "name": "podman",
+  "plugins": [
+    { "type": "bridge", "bridge": "cni-podman0", "ipam": { "type": "host-local", "subnet": "10.88.0.0/16" } },
+    { "type": "portmap", "capabilities": { "portMappings": true } },
+    { "type": "firewall" },
+    { "type": "tuning" }
+  ]
+}</code></pre>
+            </section>
+
+            <section id="crowdsec">
+                <h2>Application Layer Protection (CrowdSec)</h2>
+
+                <h3>What is CrowdSec?</h3>
+                <p>Collaborative IPS. Analyzes logs, detects attacks, shares blocklists globally. Modern fail2ban replacement.</p>
+
+                <h3>Docker Deployment</h3>
+                <pre><code class="language-yaml">version: '3.8'
+
+services:
+  crowdsec:
+    image: crowdsecurity/crowdsec:latest
+    container_name: crowdsec
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - crowdsec-config:/etc/crowdsec
+      - crowdsec-data:/var/lib/crowdsec
+      - /var/log:/var/log:ro
+      - /run/docker.sock:/run/docker.sock:ro
+    environment:
+      - COLLECTIONS=crowdsecurity/linux crowdsecurity/nginx crowdsecurity/traefik crowdsecurity/docker
+    # Auto-remediation via bouncers (see below)
+
+  # Bouncer: blocks at firewall level
+  crowdsec-firewall-bouncer:
+    image: crowdsecurity/crowdsec-firewall-bouncer:latest
+    container_name: crowdsec-bouncer
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - crowdsec-config:/etc/crowdsec
+      - /lib/modules:/lib/modules:ro
+    environment:
+      - CROWDSEC_AGENT_HOST=crowdsec
+      - CROWDSEC_AGENT_PORT=8080
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    depends_on:
+      - crowdsec
+
+  # Bouncer: for Traefik/Nginx (L7 blocking)
+  crowdsec-traefik-bouncer:
+    image: crowdsecurity/crowdsec-traefik-bouncer:latest
+    container_name: crowdsec-traefik-bouncer
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - crowdsec-config:/etc/crowdsec
+    environment:
+      - CROWDSEC_AGENT_HOST=crowdsec
+      - CROWDSEC_AGENT_PORT=8080
+      - MODE=traefik
+
+networks:
+  homelab:
+    external: true
+
+volumes:
+  crowdsec-config:
+  crowdsec-data:</code></pre>
+
+                <h3>Key Collections to Install</h3>
+                <pre><code class="language-bash"># Inside crowdsec container
+cscli collections install crowdsecurity/linux
+cscli collections install crowdsecurity/nginx
+cscli collections install crowdsecurity/traefik
+cscli collections install crowdsecurity/docker
+cscli collections install crowdsecurity/sshd
+cscli collections install crowdsecurity/http-proxy
+
+# Parsers for custom logs
+cscli parsers install crowdsecurity/dateparse-enrich
+cscli parsers install crowdsecurity/whitelists
+
+# Postoverflows (enrichment)
+cscli postoverflows install crowdsecurity/geoip-enrich
+
+# View decisions
+cscli decisions list
+
+# Add custom whitelist
+cscli decisions add --ip 10.10.10.0/24 --type whitelist --duration 365d</code></pre>
+            </section>
+
+            <section id="geoip">
+                <h2>GeoIP Blocking</h2>
+
+                <h3>OPNsense / pfSense (pfBlockerNG)</h3>
+                <ol class="steps">
+                    <li>Install pfBlockerNG-devel package</li>
+                    <li>Firewall → pfBlockerNG → IP → IPv4</li>
+                    <li>Enable "GeoIP" → Select countries to block</li>
+                    <li>Action: "Deny Inbound" / "Deny Outbound"</li>
+                    <li>Update frequency: Daily</li>
+                    <li>Apply → Creates alias + rules automatically</li>
+                </ol>
+
+                <h3>UFW + ipset (Linux Host)</h3>
+                <pre><code class="language-bash"># Install ipset
+sudo apt install ipset iptables
+
+# Create ipset for blocked countries
+sudo ipset create geoip_block hash:net
+
+# Download GeoIP lists (example: block CN, RU)
+wget -qO- https://www.ipdeny.com/ipblocks/data/aggregated/cn-aggregated.zone | \
+  while read ip; do sudo ipset add geoip_block $ip; done
+
+wget -qO- https://www.ipdeny.com/ipblocks/data/aggregated/ru-aggregated.zone | \
+  while read ip; do sudo ipset add geoip_block $ip; done
+
+# Add UFW rule using ipset
+sudo ufw insert 1 deny from any to any ipset geoip_block
+
+# Persist ipset
+sudo ipset save > /etc/ipset.conf
+# Add to /etc/rc.local or systemd service to restore on boot</code></pre>
+
+                <h3>CrowdSec GeoIP Enrichment</h3>
+                <p>Auto-enriches alerts with country/ASN. Use in decision-making.</p>
+            </section>
+
+            <section id="monitoring">
+                <h2>Monitoring & Logging</h2>
+
+                <h3>Log Collection</h3>
+                <pre><code class="language-yaml"># Vector / Fluent Bit / Promtail for log shipping
+# Example: Vector config to Loki
+sources:
+  firewall_logs:
+    type: file
+    include:
+      - /var/log/ufw.log
+      - /var/log/firewall.log
+
+transforms:
+  parse_firewall:
+    type: remap
+    inputs:
+      - firewall_logs
+    source: |
+      . = parse_regex!(.message, r'\[UFW (\w+)\] .* SRC=(\S+) DST=(\S+) PROTO=(\S+) SPT=(\d+) DPT=(\d+)')
+      .action = .[0]
+      .src_ip = .[1]
+      .dst_ip = .[2]
+      .proto = .[3]
+      .src_port = .[4]
+      .dst_port = .[5]
+
+sinks:
+  loki:
+    type: loki
+    inputs:
+      - parse_firewall
+    endpoint: http://loki:3100/loki/api/v1/push
+    labels:
+      job: firewall
+      host: "{{ hostname }}"</code></pre>
+
+                <h3>Grafana Dashboards</h3>
+                <ul class="feature-list">
+                    <li>Blocked connections over time</li>
+                    <li>Top source IPs / Countries</li>
+                    <li>Port scan detection</li>
+                    <li>CrowdSec decisions timeline</li>
+                </ul>
+
+                <h3>Alerting Rules</h3>
+                <pre><code class="language-yaml"># Prometheus alerts
+groups:
+  - name: firewall
+    rules:
+      - alert: HighBlockRate
+        expr: rate(firewall_blocks_total[5m]) > 100
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High firewall block rate"
+
+      - alert: PortScanDetected
+        expr: increase(firewall_unique_src_ips[1m]) > 50
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Possible port scan from {{ $labels.src_ip }}"</code></pre>
+            </section>
+
+            <section id="troubleshooting-fw">
+                <h2>Troubleshooting</h2>
+                <div class="troubleshooting-grid">
+                    <div class="issue-card">
+                        <h4>Can't access service after enabling firewall</h4>
+                        <pre><code class="language-bash"># Check UFW status
+sudo ufw status numbered
+
+# Test connectivity
+nc -zv 10.10.10.10 8096
+
+# Check logs
+sudo tail -f /var/log/ufw.log
+journalctl -u firewalld -f
+
+# Packet capture
+sudo tcpdump -i eth0 host 10.10.20.50 and port 8096</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Docker published ports bypass UFW</h4>
+                        <pre><code class="language-bash"># Add rules to DOCKER-USER chain
+iptables -I DOCKER-USER -i eth0 ! -s 10.10.20.0/24 -j DROP
+
+# Or disable iptables in Docker daemon:
+# /etc/docker/daemon.json
+# { "iptables": false }
+# Then manage all rules manually</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>VPN clients can't reach LAN</h4>
+                        <pre><code class="language-bash"># Check VPN interface firewall rules
+# Verify outbound NAT for VPN subnet
+# Check routing: VPN clients need route to LAN subnets
+# WireGuard: AllowedIPs = 10.10.0.0/16</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>CrowdSec not blocking</h4>
+                        <pre><code class="language-bash"># Check bouncer logs
+docker logs crowdsec-bouncer
+
+# Verify decisions exist
+cscli decisions list
+
+# Check bouncer connected to agent
+cscli machines list</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Lockout recovery</h4>
+                        <pre><code class="language-bash"># Console/serial access (always maintain!)
+# UFW: ufw disable (from console)
+# firewalld: firewall-cmd --panic-on (then --panic-off)
+# nftables: nft flush ruleset
+# OPNsense: Console menu → Option 4 (disable firewall)</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="guide-navigation">
+                <a href="../index.html#guides" class="btn btn-secondary">← Back to Guides</a>
+                <a href="security.html" class="btn btn-primary">Next: Security Hardening →</a>
+            </nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <path d="M8 17h8M12 17v-5"/>
+                        </svg>
+                        <span>HomeLab Guide</span>
+                    </a>
+                    <p>Free, open-source guides for building your own home lab. No ads, no tracking, just knowledge.</p>
+                </div>
+                <nav class="footer-nav">
+                    <div class="footer-section">
+                        <h4>Guides</h4>
+                        <ul>
+                            <li><a href="basics.html">Home Lab Basics</a></li>
+                            <li><a href="docker.html">Docker Fundamentals</a></li>
+                            <li><a href="jellyfin.html">Jellyfin Server</a></li>
+                            <li><a href="reverse-proxy.html">Reverse Proxy & SSL</a></li>
+                            <li><a href="backup.html">Backup Strategy</a></li>
+                            <li><a href="vpn.html">Remote Access (VPN)</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="jellyfin.html">Jellyfin</a></li>
+                            <li><a href="nextcloud.html">Nextcloud</a></li>
+                            <li><a href="homeassistant.html">Home Assistant</a></li>
+                            <li><a href="portainer.html">Portainer</a></li>
+                            <li><a href="uptime-kuma.html">Uptime Kuma</a></li>
+                            <li><a href="authentik.html">Authentik</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Networking</h4>
+                        <ul>
+                            <li><a href="vlans.html">VLANs & Segmentation</a></li>
+                            <li><a href="dns.html">DNS & Local Domains</a></li>
+                            <li><a href="firewall.html">Firewall Rules</a></li>
+                            <li><a href="security.html">Security Hardening</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with ❤️ for the self-hosting community. <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a></p>
+                <p class="license">Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>

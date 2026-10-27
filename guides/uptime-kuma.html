@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to setting up Uptime Kuma - self-hosted monitoring with beautiful status pages. HTTP(s), TCP, DNS, Docker, and push monitoring.">
+    <title>Uptime Kuma - HomeLab Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="../index.html" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 17h8M12 17v-5"/>
+                </svg>
+                <span>HomeLab Guide</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <ul class="nav-links">
+                <li><a href="../index.html#guides">Guides</a></li>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../index.html#hardware">Hardware</a></li>
+                <li><a href="../index.html#networking">Networking</a></li>
+                <li><a href="../index.html#resources">Resources</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="guide-page">
+        <article class="guide-content container">
+            <header class="guide-header">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="../index.html">Home</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <a href="../index.html#guides">Guides</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <span aria-current="page">Uptime Kuma</span>
+                </nav>
+                <h1>Uptime Kuma</h1>
+                <p class="guide-description">Self-hosted monitoring with beautiful status pages. HTTP(s), TCP, DNS, Docker, and push monitoring. Multiple notification channels.</p>
+                <div class="guide-meta">
+                    <span class="guide-difficulty beginner">Beginner</span>
+                    <span class="guide-time">~15 min read</span>
+                    <span class="guide-updated">Updated 2026</span>
+                </div>
+            </header>
+
+            <section id="why-uptime-kuma">
+                <h2>Why Uptime Kuma?</h2>
+
+                <div class="reasons-grid">
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <h3>Multiple Monitor Types</h3>
+                        <p>HTTP(s), TCP, Ping, DNS, Push, Steam Game Server, Docker containers, and more.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                        </div>
+                        <h3>Beautiful Status Pages</h3>
+                        <p>Public status pages with custom domains, branding, incident timeline. Like statuspage.io but free.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </div>
+                        <h3>50+ Notification Channels</h3>
+                        <p>Telegram, Discord, Slack, Email, Pushover, Gotify, Matrix, Webhook, PagerDuty, Opsgenie, and more.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                        <h3>Certificate Monitoring</h3>
+                        <p>SSL/TLS certificate expiry alerts. Track expiration dates, auto-renewal status.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <h3>Docker Monitoring</h3>
+                        <p>Monitor container health, auto-discover containers, track resource usage.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        <h3>Lightweight & Fast</h3>
+                        <p>Node.js + SQLite. Low resource usage. Runs on Raspberry Pi. Easy backup (single file).</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="docker-setup">
+                <h2>Docker Deployment</h2>
+
+                <h3>Docker Compose</h3>
+                <pre><code class="language-yaml">version: '3.8'
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:1.23
+    container_name: uptime-kuma
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - uptime-kuma-data:/app/data
+    ports:
+      - "3001:3001"
+    environment:
+      - TZ=America/New_York
+    # Optional: Run as non-root (UID 1000)
+    # user: "1000:1000"
+
+networks:
+  homelab:
+    external: true
+
+volumes:
+  uptime-kuma-data:</code></pre>
+
+                <h3>Deploy</h3>
+                <pre><code class="language-bash">mkdir -p ~/uptime-kuma && cd ~/uptime-kuma
+# Save as docker-compose.yml
+docker compose up -d
+
+# Check logs
+docker compose logs -f uptime-kuma</code></pre>
+
+                <h3>Initial Setup</h3>
+                <ol class="steps">
+                    <li>Open <code>http://your-server:3001</code></li>
+                    <li>Create admin account (username/password)</li>
+                    <li>Dashboard loads - ready to add monitors</li>
+                </ol>
+            </section>
+
+            <section id="monitor-types">
+                <h2>Monitor Types & Configuration</h2>
+
+                <h3>HTTP(s) Monitor</h3>
+                <p>Most common - checks web services, APIs, websites.</p>
+                <ul class="feature-list">
+                    <li><strong>URL:</strong> Full URL including protocol</li>
+                    <li><strong>Method:</strong> GET, POST, PUT, etc.</li>
+                    <li><strong>Expected Status:</strong> 200-299, or specific code</li>
+                    <li><strong>Headers:</strong> Custom headers (auth tokens, API keys)</li>
+                    <li><strong>Body:</strong> For POST requests</li>
+                    <li><strong>Keyword:</strong> Check response contains specific text</li>
+                    <li><strong>Max Redirects:</strong> Follow redirects (default 10)</li>
+                    <li><strong>Accept Invalid Certs:</strong> For self-signed certs</li>
+                </ul>
+
+                <h3>TCP Port Monitor</h3>
+                <p>Check if a port is open (databases, game servers, custom services).</p>
+                <ul class="feature-list">
+                    <li>Hostname/IP + Port</li>
+                    <li>Optional: Send string, expect string in response</li>
+                </ul>
+
+                <h3>DNS Monitor</h3>
+                <p>Verify DNS resolution returns expected IP.</p>
+                <ul class="feature-list">
+                    <li>Domain name + expected IP</li>
+                    <li>Record type: A, AAAA, CNAME, MX, TXT</li>
+                    <li>Custom DNS server (default: system)</li>
+                </ul>
+
+                <h3>Push Monitor</h3>
+                <p>For cron jobs, backups, scripts - they "push" status to Uptime Kuma.</p>
+                <ol class="steps">
+                    <li>Create Push monitor → get push URL</li>
+                    <li>In your script: <code>curl -X POST "https://uptime.yourdomain.com/api/push/abc123?status=up&msg=OK&ping=45"</code></li>
+                    <li>If no push received within interval → DOWN</li>
+                </ol>
+
+                <h3>Docker Monitor</h3>
+                <p>Monitor container health checks automatically.</p>
+                <ul class="feature-list">
+                    <li>Select Docker host (local or remote)</li>
+                    <li>Choose container to monitor</li>
+                    <li>Uses container's HEALTHCHECK</li>
+                </ul>
+
+                <h3>Steam Game Server</h3>
+                <p>Query Steam game servers (CS2, TF2, Valheim, etc.) for player count, map, status.</p>
+            </section>
+
+            <section id="notifications">
+                <h2>Notification Channels</h2>
+
+                <h3>Popular Channels</h3>
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Channel</th>
+                                <th>Setup</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Telegram</td>
+                                <td>Bot token + chat ID</td>
+                                <td>Mobile push, groups</td>
+                            </tr>
+                            <tr>
+                                <td>Discord</td>
+                                <td>Webhook URL</td>
+                                <td>Team channels, rich embeds</td>
+                            </tr>
+                            <tr>
+                                <td>Slack</td>
+                                <td>Webhook / Bot token</td>
+                                <td>Workplace alerts</td>
+                            </tr>
+                            <tr>
+                                <td>Email (SMTP)</td>
+                                <td>SMTP server, credentials</td>
+                                <td>Formal notifications</td>
+                            </tr>
+                            <tr>
+                                <td>Gotify</td>
+                                <td>Server URL + app token</td>
+                                <td>Self-hosted push</td>
+                            </tr>
+                            <tr>
+                                <td>Matrix</td>
+                                <td>Homeserver + access token</td>
+                                <td>Decentralized chat</td>
+                            </tr>
+                            <tr>
+                                <td>Webhook</td>
+                                <td>Custom URL + JSON template</td>
+                                <td>Custom integrations</td>
+                            </tr>
+                            <tr>
+                                <td>PagerDuty</td>
+                                <td>Integration key</td>
+                                <td>On-call escalation</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Telegram Setup Example</h3>
+                <ol class="steps">
+                    <li>Message <code>@BotFather</code> → <code>/newbot</code></li>
+                    <li>Copy bot token</li>
+                    <li>Message <code>@userinfobot</code> → get chat ID</li>
+                    <li>In Uptime Kuma: Notifications → Add → Telegram</li>
+                    <li>Paste token and chat ID</li>
+                    <li>Test notification</li>
+                </ol>
+
+                <h3>Notification Groups</h3>
+                <p>Group multiple channels. Assign groups to monitors. Different groups for critical vs. informational.</p>
+            </section>
+
+            <section id="status-pages">
+                <h2>Status Pages</h2>
+
+                <h3>Create a Public Status Page</h3>
+                <ol class="steps">
+                    <li>Status Pages → New Status Page</li>
+                    <li>Slug: <code>status</code> (accessible at <code>https://uptime.yourdomain.com/status</code>)</li>
+                    <li>Title: "My Services Status"</li>
+                    <li>Select monitors to display</li>
+                    <li>Custom domain: Add CNAME, enable in settings</li>
+                    <li>Customize: Logo, colors, footer, custom CSS</li>
+                </ol>
+
+                <h3>Status Page Features</h3>
+                <ul class="feature-list">
+                    <li>Real-time monitor status</li>
+                    <li>Incident timeline (auto from downtime)</li>
+                    <li>90-day uptime percentage</li>
+                    <li>Response time graphs</li>
+                    <li>Maintenance windows (planned downtime)</li>
+                    <li>RSS/Atom feed for subscribers</li>
+                    <li>Password protection option</li>
+                </ul>
+            </section>
+
+            <section id="advanced">
+                <h2>Advanced Configuration</h2>
+
+                <h3>Reverse Proxy with SSL</h3>
+                <p>Using Nginx Proxy Manager (see <a href="reverse-proxy.html">Reverse Proxy Guide</a>):</p>
+                <ol class="steps">
+                    <li>Add proxy host: <code>uptime.yourdomain.com</code></li>
+                    <li>Forward to: <code>uptime-kuma:3001</code></li>
+                    <li>Enable WebSocket support (required for real-time updates)</li>
+                    <li>SSL: Let's Encrypt, Force SSL, HSTS</li>
+                </ol>
+
+                <h3>Two-Factor Authentication (2FA)</h3>
+                <p>Settings → Account → Enable 2FA (TOTP). Scan QR with Authenticator app.</p>
+
+                <h3>Backup & Restore</h3>
+                <pre><code class="language-bash"># Backup (single SQLite file)
+cp /path/to/uptime-kuma/data/kuma.db /backups/uptime-kuma-$(date +%F).db
+
+# Or via Docker
+docker run --rm \
+  -v uptime-kuma-data:/app/data \
+  -v $(pwd):/backup \
+  alpine cp /app/data/kuma.db /backup/kuma-$(date +%F).db
+
+# Restore
+docker run --rm \
+  -v uptime-kuma-data:/app/data \
+  -v $(pwd):/backup \
+  alpine cp /backup/kuma-2026-01-15.db /app/data/kuma.db</code></pre>
+
+                <h3>Multiple Docker Hosts</h3>
+                <p>Settings → Docker → Add Docker Host. Supports TCP (with TLS) or Unix socket via SSH tunnel.</p>
+
+                <h3>Maintenance Windows</h3>
+                <p>Schedule planned downtime. Monitors in maintenance won't trigger alerts.</p>
+            </section>
+
+            <section id="troubleshooting">
+                <h2>Troubleshooting</h2>
+
+                <div class="troubleshooting-grid">
+                    <div class="issue-card">
+                        <h4>Monitor shows DOWN but service works</h4>
+                        <pre><code class="language-bash"># Check from Uptime Kuma container
+docker exec uptime-kuma curl -v https://your-service.com
+
+# Check DNS resolution
+docker exec uptime-kuma nslookup your-service.com
+
+# Verify network connectivity
+docker exec uptime-kuma ping your-service.com</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Notifications not sending</h4>
+                        <pre><code class="language-bash"># Check notification test in UI
+# Check container logs for errors
+docker logs uptime-kuma | grep -i notification
+
+# Verify webhook URL accessible from container
+docker exec uptime-kuma curl -X POST "your-webhook-url"</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Real-time updates not working</h4>
+                        <pre><code class="language-bash"># Ensure WebSocket support in reverse proxy
+# Nginx Proxy Manager: Enable "WebSocket Support"
+# Check browser console for WS connection errors</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>High memory usage</h4>
+                        <pre><code class="language-bash"># Limit data retention
+# Settings → General → Monitoring History: 30 days (default 90)
+# Reduce heartbeat interval for less frequent checks</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="guide-navigation">
+                <a href="../index.html#guides" class="btn btn-secondary">← Back to Guides</a>
+                <a href="authentik.html" class="btn btn-primary">Next: Authentik →</a>
+            </nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <path d="M8 17h8M12 17v-5"/>
+                        </svg>
+                        <span>HomeLab Guide</span>
+                    </a>
+                    <p>Free, open-source guides for building your own home lab. No ads, no tracking, just knowledge.</p>
+                </div>
+                <nav class="footer-nav">
+                    <div class="footer-section">
+                        <h4>Guides</h4>
+                        <ul>
+                            <li><a href="basics.html">Home Lab Basics</a></li>
+                            <li><a href="docker.html">Docker Fundamentals</a></li>
+                            <li><a href="jellyfin.html">Jellyfin Server</a></li>
+                            <li><a href="reverse-proxy.html">Reverse Proxy & SSL</a></li>
+                            <li><a href="backup.html">Backup Strategy</a></li>
+                            <li><a href="vpn.html">Remote Access (VPN)</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="jellyfin.html">Jellyfin</a></li>
+                            <li><a href="nextcloud.html">Nextcloud</a></li>
+                            <li><a href="homeassistant.html">Home Assistant</a></li>
+                            <li><a href="portainer.html">Portainer</a></li>
+                            <li><a href="uptime-kuma.html">Uptime Kuma</a></li>
+                            <li><a href="authentik.html">Authentik</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Networking</h4>
+                        <ul>
+                            <li><a href="vlans.html">VLANs & Segmentation</a></li>
+                            <li><a href="dns.html">DNS & Local Domains</a></li>
+                            <li><a href="firewall.html">Firewall Rules</a></li>
+                            <li><a href="security.html">Security Hardening</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with ❤️ for the self-hosting community. <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a></p>
+                <p class="license">Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>

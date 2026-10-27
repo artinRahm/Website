@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to setting up Home Assistant - the open-source home automation hub. Control 2000+ devices locally, no cloud required. Privacy-first automation.">
+    <title>Home Assistant - HomeLab Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="../index.html" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 17h8M12 17v-5"/>
+                </svg>
+                <span>HomeLab Guide</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <ul class="nav-links">
+                <li><a href="../index.html#guides">Guides</a></li>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../index.html#hardware">Hardware</a></li>
+                <li><a href="../index.html#networking">Networking</a></li>
+                <li><a href="../index.html#resources">Resources</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="guide-page">
+        <article class="guide-content container">
+            <header class="guide-header">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="../index.html">Home</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <a href="../index.html#guides">Guides</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <span aria-current="page">Home Assistant</span>
+                </nav>
+                <h1>Home Assistant</h1>
+                <p class="guide-description">Open-source home automation hub. Control 2000+ devices locally, no cloud required. Privacy-first automation with powerful scripting.</p>
+                <div class="guide-meta">
+                    <span class="guide-difficulty beginner">Beginner</span>
+                    <span class="guide-time">~30 min read</span>
+                    <span class="guide-updated">Updated 2026</span>
+                </div>
+            </header>
+
+            <section id="why-home-assistant">
+                <h2>Why Home Assistant?</h2>
+
+                <div class="reasons-grid">
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <h3>Local Control</h3>
+                        <p>No internet required. Your automations run even when the cloud is down. Zero latency, total privacy.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </div>
+                        <h3>2000+ Integrations</h3>
+                        <p>Zigbee, Z-Wave, Matter, Thread, Wi-Fi, Bluetooth, MQTT, Modbus, KNX, and every major smart home brand.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 17h8M12 17v-5"/></svg>
+                        </div>
+                        <h3>Powerful Automations</h3>
+                        <p>Visual editor, YAML, or Python scripts. Triggers, conditions, actions, blueprints, variables, parallel execution.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <h3>Voice Control</h3>
+                        <p>Built-in Assist (local voice), Alexa, Google Assistant, Siri shortcuts. Wake word detection with Wyoming protocol.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                        <h3>No Vendor Lock-in</h3>
+                        <p>Open source (MIT), runs on your hardware. Export data anytime. Community-driven, no subscription model.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <h3>Dashboards & Energy</h3>
+                        <p>Custom Lovelace dashboards, energy management, solar monitoring, device tracking, history graphs.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="installation-methods">
+                <h2>Installation Methods</h2>
+
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Best For</th>
+                                <th>Pros</th>
+                                <th>Cons</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Home Assistant OS</strong> (Recommended)</td>
+                                <td>Dedicated device (Pi, NUC, VM)</td>
+                                <td>Managed OS, auto-updates, add-ons, supervised</td>
+                                <td>Full device, no other apps</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Home Assistant Container</strong></td>
+                                <td>Existing Docker host</td>
+                                <td>Run alongside other containers, lightweight</td>
+                                <td>No add-ons, manual supervision</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Home Assistant Supervised</strong></td>
+                                <td>Debian/Ubuntu host</td>
+                                <td>Add-ons support, managed containers</td>
+                                <td>Specific OS requirements, complex</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Home Assistant Core</strong></td>
+                                <td>Developers, custom setups</td>
+                                <td>Maximum flexibility, pip install</td>
+                                <td>Manual everything, no add-ons</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout callout-tip">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <div>
+                        <strong>Recommendation:</strong> Use <strong>Home Assistant OS</strong> on a dedicated device (Raspberry Pi, Intel NUC, or VM). It's the easiest path with full add-on support and automatic updates.
+                    </div>
+                </div>
+            </section>
+
+            <section id="docker-setup">
+                <h2>Docker Deployment (Container Method)</h2>
+
+                <h3>Docker Compose</h3>
+                <pre><code class="language-yaml">version: '3.8'
+
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:2024.12
+    container_name: homeassistant
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - homeassistant-config:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    ports:
+      - "8123:8123"
+    environment:
+      - TZ=America/New_York
+    # For USB devices (Zigbee/Z-Wave dongles):
+    # devices:
+    #   - /dev/ttyUSB0:/dev/ttyUSB0
+    #   - /dev/ttyACM0:/dev/ttyACM0
+    # privileged: true  # Alternative to devices
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8123/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Optional: MQTT Broker
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: mosquitto
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-logs:/mosquitto/log
+      - ./mosquitto/config:/mosquitto/config
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+
+  # Optional: Zigbee2MQTT (if using Zigbee dongle)
+  zigbee2mqtt:
+    image: koenkk/zigbee2mqtt:latest
+    container_name: zigbee2mqtt
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - zigbee2mqtt-data:/app/data
+      - /run/udev:/run/udev:ro
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0  # Adjust to your dongle
+    environment:
+      - TZ=America/New_York
+
+networks:
+  homelab:
+    external: true
+
+volumes:
+  homeassistant-config:
+  mosquitto-data:
+  mosquitto-logs:
+  zigbee2mqtt-data:</code></pre>
+
+                <h3>Deploy</h3>
+                <pre><code class="language-bash">mkdir -p ~/homeassistant && cd ~/homeassistant
+# Save as docker-compose.yml
+docker compose up -d
+
+# Check logs
+docker compose logs -f homeassistant</code></pre>
+
+                <h3>Initial Setup</h3>
+                <ol class="steps">
+                    <li>Open <code>http://your-server:8123</code></li>
+                    <li>Create owner account (first user = admin)</li>
+                    <li>Name your home, set location, unit system</li>
+                    <li>Home Assistant will auto-discover devices on network</li>
+                    <li>Finish setup → Dashboard loads</li>
+                </ol>
+            </section>
+
+            <section id="configuration">
+                <h2>Configuration Basics</h2>
+
+                <h3>Configuration Structure</h3>
+                <pre><code class="text">/config/
+├── configuration.yaml      # Main config
+├── automations.yaml        # Automations (or use UI)
+├── scripts.yaml            # Scripts
+├── scenes.yaml             # Scenes
+├── dashboards/             # Lovelace dashboards
+│   └── lovelace.yaml
+├── secrets.yaml            # Passwords, tokens (gitignored)
+├── packages/               # Modular config packages
+├── themes/                 # Custom themes
+├── www/                    # Static files (served at /local/)
+├── custom_components/      # Custom integrations
+└── .storage/               # UI-managed config (don't edit manually)</code></pre>
+
+                <h3>Essential configuration.yaml</h3>
+                <pre><code class="language-yaml"># configuration.yaml
+homeassistant:
+  name: My Home
+  latitude: 40.7128
+  longitude: -74.0060
+  elevation: 10
+  unit_system: metric
+  time_zone: America/New_York
+  country: US
+
+# Load separate files
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+# Recorder (history) - keep 30 days
+recorder:
+  purge_keep_days: 30
+  db_url: sqlite:///home-assistant_v2.db
+  # For MariaDB/PostgreSQL:
+  # db_url: mysql://user:pass@db/homeassistant?charset=utf8mb4
+
+# Logbook
+logbook:
+
+# History
+history:
+
+# Sun integration (for sunrise/sunset triggers)
+sun:
+
+# MQTT
+mqtt:
+  broker: mosquitto
+  port: 1883
+  discovery: true
+  discovery_prefix: homeassistant
+
+# HTTP (for reverse proxy)
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.17.0.0/16  # Docker network
+    - 10.0.0.0/8     # Tailscale
+  ip_ban_enabled: true
+  login_attempts_threshold: 5
+
+# Logger
+logger:
+  default: info
+  logs:
+    homeassistant.components.mqtt: debug
+
+# Backup
+backup:
+  auto_purge: true
+  backup_dir: /backup
+
+# Energy dashboard
+energy:</code></pre>
+
+                <h3>Secrets Management</h3>
+                <pre><code class="language-yaml"># secrets.yaml
+wifi_ssid: "MyNetwork"
+wifi_password: "supersecret"
+api_key_openweathermap: "abc123"
+mqtt_username: "homeassistant"
+mqtt_password: "mqttpass"
+# Reference in config: !secret wifi_password</code></pre>
+            </section>
+
+            <section id="integrations">
+                <h2>Essential Integrations</h2>
+
+                <h3>Network & Discovery</h3>
+                <ul class="feature-list">
+                    <li><strong>DHCP:</strong> Auto-discovers devices (enable in Settings → Devices & Services)</li>
+                    <li><strong>mDNS/Zeroconf:</strong> Finds HomeKit, Chromecast, printers</li>
+                    <li><strong>SSDP:</strong> UPnP devices (Sonos, Roku, etc.)</li>
+                    <li><strong>Network:</strong> Track device presence via ping/ARP</li>
+                </ul>
+
+                <h3>Protocol Integrations</h3>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <h4>MQTT</h4>
+                        <p>Core protocol for DIY sensors. Auto-discovery via <code>homeassistant/</code> topic prefix.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Zigbee (via Zigbee2MQTT)</h4>
+                        <p>Inexpensive sensors, bulbs, switches. Sonoff, IKEA, Aqara, Tuya devices.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Z-Wave (via Z-Wave JS)</h4>
+                        <p>Reliable mesh, no hub needed. Aeotec, Zooz, Fibaro devices.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Matter/Thread</h4>
+                        <p>New unified standard. Border router required (HomePod, Google Nest, custom).</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>ESPHome</h4>
+                        <p>Custom ESP32/ESP8266 devices. Native HA API, OTA updates, deep sleep support.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Shelly</h4>
+                        <p>Wi-Fi relays, sensors. Local control, no cloud. Great for retrofits.</p>
+                    </div>
+                </div>
+
+                <h3>Cloud & Voice (Optional)</h3>
+                <ul class="feature-list">
+                    <li><strong>Nabu Casa Cloud:</strong> Remote access, Alexa/Google sync, supports HA development ($5/mo)</li>
+                    <li><strong>Assist (Local Voice):</strong> Settings → Voice Assistants → Add. Works offline with Wyoming.</li>
+                    <li><strong>Cloudflare Tunnel:</strong> Free secure remote access without open ports.</li>
+                </ul>
+            </section>
+
+            <section id="automations">
+                <h2>Automation Examples</h2>
+
+                <h3>Motion Light (YAML)</h3>
+                <pre><code class="language-yaml"># automations.yaml
+- alias: "Hallway Motion Light"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.hallway_motion
+      to: "on"
+  condition:
+    - condition: sun
+      after: sunset
+      after_offset: "-00:30:00"
+    - condition: numeric_state
+      entity_id: sensor.hallway_illuminance
+      below: 50
+  action:
+    - service: light.turn_on
+      target:
+        entity_id: light.hallway
+      data:
+        brightness_pct: 80
+        color_temp: 350
+    - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.hallway_motion
+          to: "off"
+          for: "00:05:00"
+    - service: light.turn_off
+      target:
+        entity_id: light.hallway
+  mode: restart</code></pre>
+
+                <h3>Blueprints (Reusable Automations)</h3>
+                <p>Settings → Automations → Blueprints → Import from forum/exchange. Popular: motion light, notify when door left open, sun-based climate.</p>
+
+                <h3>Script Example (Reusable Actions)</h3>
+                <pre><code class="language-yaml"># scripts.yaml
+notify_family:
+  alias: "Notify Family"
+  sequence:
+    - service: notify.mobile_app_phone
+      data:
+        message: "{{ message }}"
+        title: "Home Assistant"
+    - service: notify.telegram
+      data:
+        message: "{{ message }}"
+  fields:
+    message:
+      name: "Message"
+      description: "Notification text"
+      required: true
+      selector:
+        text:</code></pre>
+            </section>
+
+            <section id="dashboards">
+                <h2>Lovelace Dashboards</h2>
+
+                <h3>Dashboard Modes</h3>
+                <ul class="feature-list">
+                    <li><strong>Auto-generated:</strong> HA builds from entities (good start)</li>
+                    <li><strong>Manual (YAML):</strong> Full control, version control friendly</li>
+                    <li><strong>UI Editor:</strong> Drag-drop, card configuration</li>
+                </ul>
+
+                <h3>Essential Cards</h3>
+                <pre><code class="language-yaml"># dashboards/lovelace.yaml
+title: Home
+views:
+  - title: Overview
+    icon: mdi:home
+    cards:
+      - type: glance
+        title: Climate
+        entities:
+          - sensor.living_room_temperature
+          - sensor.living_room_humidity
+          - climate.thermostat
+      - type: entities
+        title: Lights
+        entities:
+          - light.living_room
+          - light.kitchen
+          - light.bedroom
+      - type: energy-graph
+        title: Energy Usage
+      - type: markdown
+        content: |
+          **Last Updated:** {{ now().strftime('%H:%M') }}
+          **Uptime:** {{ states('sensor.uptime') }}</code></pre>
+
+                <h3>Recommended Community Cards (HACS)</h3>
+                <ul class="feature-list">
+                    <li><strong>Button Card:</strong> Highly customizable buttons</li>
+                    <li><strong>Mini Graph Card:</strong> Compact history graphs</li>
+                    <li><strong>Mushroom Cards:</strong> Beautiful, consistent card set</li>
+                    <li><strong>Layout Card:</strong> Custom grid/flex layouts</li>
+                    <li><strong>Bar Card:</strong> Horizontal bar indicators</li>
+                </ul>
+            </section>
+
+            <section id="backup">
+                <h2>Backup & Restore</h2>
+
+                <h3>Built-in Backup (Home Assistant OS/Supervised)</h3>
+                <p>Settings → System → Backups. Create full or partial backups. Schedule automatic backups to network storage.</p>
+
+                <h3>Container Method Backup</h3>
+                <pre><code class="language-bash">#!/bin/bash
+# /usr/local/bin/backup-homeassistant.sh
+set -euo pipefail
+
+BACKUP_DIR="/mnt/backups/homeassistant"
+DATE=$(date +%F_%H-%M)
+RETENTION_DAYS=30
+
+mkdir -p "$BACKUP_DIR"
+
+# Stop HA briefly for consistent backup (optional)
+# docker stop homeassistant
+
+# Backup config volume
+docker run --rm \
+  -v homeassistant-config:/config \
+  -v "$BACKUP_DIR":/backup \
+  alpine tar czf /backup/ha-config_$DATE.tar.gz -C /config .
+
+# Start HA if stopped
+# docker start homeassistant
+
+# Cleanup
+find "$BACKUP_DIR" -type f -mtime +$RETENTION_DAYS -delete
+
+echo "Home Assistant backup completed: $DATE"</code></pre>
+
+                <h3>Restore</h3>
+                <pre><code class="language-bash"># 1. Stop container
+docker compose down
+
+# 2. Restore config
+docker run --rm \
+  -v homeassistant-config:/config \
+  -v /mnt/backups/homeassistant:/backup \
+  alpine tar xzf /backup/ha-config_2026-01-15_03-00.tar.gz -C /config
+
+# 3. Start
+docker compose up -d</code></pre>
+            </section>
+
+            <section id="troubleshooting">
+                <h2>Troubleshooting</h2>
+
+                <div class="troubleshooting-grid">
+                    <div class="issue-card">
+                        <h4>Integration not showing up</h4>
+                        <pre><code class="language-bash"># Check logs
+docker logs homeassistant | grep -i "integration_name"
+
+# Restart integration
+# Settings → Devices & Services → Integration → Reload
+
+# Clear browser cache / try incognito</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Zigbee/Z-Wave dongle not detected</h4>
+                        <pre><code class="language-bash"># Find device
+ls -la /dev/ttyUSB* /dev/ttyACM*
+# Note the device (e.g., /dev/ttyUSB0)
+
+# Add to docker-compose.yml devices section
+# Check permissions
+ls -la /dev/ttyUSB0
+# Should be accessible by container (run as root or add user to dialout group)</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>MQTT entities not appearing</h4>
+                        <pre><code class="language-bash"># Check MQTT broker logs
+docker logs mosquitto
+
+# Verify discovery topic format
+# homeassistant/sensor/unique_id/config
+# Must include: name, unique_id, state_topic, device
+
+# Enable MQTT debug in configuration.yaml:
+# logger:
+#   logs:
+#     homeassistant.components.mqtt: debug</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Automation not triggering</h4>
+                        <pre><code class="language-bash"># Check trace in UI
+# Settings → Automations → Your automation → Traces
+
+# Test trigger manually
+# Developer Tools → States → Set state to trigger value
+
+# Check condition evaluation
+# Use template editor: {{ states('binary_sensor.motion') }}</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>High memory / CPU usage</h4>
+                        <pre><code class="language-bash"># Check recorder purge settings
+# Increase purge frequency, reduce keep_days
+
+# Disable unused integrations
+# Settings → Devices & Services → Delete unused
+
+# Limit history for noisy entities
+# recorder:
+#   exclude:
+#     entities:
+#       - sensor.noisy_sensor
+
+# Check custom components for memory leaks</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Reverse proxy issues (400/404 errors)</h4>
+                        <pre><code class="language-bash"># Ensure HTTP config in configuration.yaml:
+# http:
+#   use_x_forwarded_for: true
+#   trusted_proxies:
+#     - 172.17.0.0/16
+
+# Nginx Proxy Manager: Enable WebSocket Support
+# Check X-Forwarded-For header passed correctly</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="guide-navigation">
+                <a href="../index.html#guides" class="btn btn-secondary">← Back to Guides</a>
+                <a href="vlans.html" class="btn btn-primary">Next: VLANs & Segmentation →</a>
+            </nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <path d="M8 17h8M12 17v-5"/>
+                        </svg>
+                        <span>HomeLab Guide</span>
+                    </a>
+                    <p>Free, open-source guides for building your own home lab. No ads, no tracking, just knowledge.</p>
+                </div>
+                <nav class="footer-nav">
+                    <div class="footer-section">
+                        <h4>Guides</h4>
+                        <ul>
+                            <li><a href="basics.html">Home Lab Basics</a></li>
+                            <li><a href="docker.html">Docker Fundamentals</a></li>
+                            <li><a href="jellyfin.html">Jellyfin Server</a></li>
+                            <li><a href="reverse-proxy.html">Reverse Proxy & SSL</a></li>
+                            <li><a href="backup.html">Backup Strategy</a></li>
+                            <li><a href="vpn.html">Remote Access (VPN)</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="jellyfin.html">Jellyfin</a></li>
+                            <li><a href="nextcloud.html">Nextcloud</a></li>
+                            <li><a href="homeassistant.html">Home Assistant</a></li>
+                            <li><a href="portainer.html">Portainer</a></li>
+                            <li><a href="uptime-kuma.html">Uptime Kuma</a></li>
+                            <li><a href="authentik.html">Authentik</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Networking</h4>
+                        <ul>
+                            <li><a href="vlans.html">VLANs & Segmentation</a></li>
+                            <li><a href="dns.html">DNS & Local Domains</a></li>
+                            <li><a href="firewall.html">Firewall Rules</a></li>
+                            <li><a href="security.html">Security Hardening</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with ❤️ for the self-hosting community. <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a></p>
+                <p class="license">Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>
