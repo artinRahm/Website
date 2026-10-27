@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn how to build your own home lab - from Jellyfin media server to Docker, networking, and more. Beginner-friendly guides with step-by-step instructions.">
+    <title>Home Lab Guide - Start Your Self-Hosting Journey</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="index.html" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 17h8M12 17v-5"/>
+                </svg>
+                <span>HomeLab Guide</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <ul class="nav-links">
+                <li><a href="index.html#guides" class="active">Guides</a></li>
+                <li><a href="index.html#services">Services</a></li>
+                <li><a href="index.html#hardware">Hardware</a></li>
+                <li><a href="index.html#networking">Networking</a></li>
+                <li><a href="index.html#resources">Resources</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <span class="hero-badge">Beginner Friendly</span>
+                    <h1>Build Your Own <span class="highlight">Home Lab</span></h1>
+                    <p class="hero-subtitle">Learn to self-host services like Jellyfin, Nextcloud, Home Assistant, and more. Step-by-step guides designed for beginners.</p>
+                    <div class="hero-actions">
+                        <a href="#guides" class="btn btn-primary">Start Learning</a>
+                        <a href="#services" class="btn btn-secondary">Explore Services</a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <span class="stat-number">15+</span>
+                            <span class="stat-label">Guides</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">8</span>
+                            <span class="stat-label">Services Covered</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">100%</span>
+                            <span class="stat-label">Free & Open Source</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="terminal-window">
+                        <div class="terminal-header">
+                            <div class="terminal-dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                        </div>
+                        <div class="terminal-body">
+                            <div class="terminal-line"><span class="prompt">$</span> <span class="command">docker run -d jellyfin/jellyfin</span></div>
+                            <div class="terminal-line"><span class="output">Pulling jellyfin/jellyfin:latest...</span></div>
+                            <div class="terminal-line"><span class="output">✓ Image downloaded</span></div>
+                            <div class="terminal-line"><span class="output">✓ Container started on port 8096</span></div>
+                            <div class="terminal-line"><span class="prompt">$</span> <span class="command">open http://localhost:8096</span></div>
+                            <div class="terminal-line"><span class="success">🎉 Jellyfin is running!</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="guides" class="guides">
+            <div class="container">
+                <header class="section-header">
+                    <h2>Getting Started Guides</h2>
+                    <p>Follow our step-by-step tutorials to set up your home lab from scratch</p>
+                </header>
+                <div class="guides-grid">
+                    <article class="guide-card">
+                        <div class="guide-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                                <path d="M8 17h8M12 17v-5"/>
+                            </svg>
+                        </div>
+                        <h3>Home Lab Basics</h3>
+                        <p>Understand what a home lab is, why you need one, and what hardware to start with.</p>
+                        <a href="guides/basics.html" class="guide-link">Read Guide →</a>
+                    </article>
+                    <article class="guide-card">
+                        <div class="guide-icon docker">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                                <line x1="12" y1="22.08" x2="12" y2="12"/>
+                            </svg>
+                        </div>
+                        <h3>Docker Fundamentals</h3>
+                        <p>Learn Docker basics - containers, images, volumes, networks, and Docker Compose.</p>
+                        <a href="guides/docker.html" class="guide-link">Read Guide →</a>
+                    </article>
+                    <article class="guide-card featured">
+                        <div class="guide-icon jellyfin">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="23 7 16 12 23 17 23 7"/>
+                                <rect x="1" y="5" width="15" height="14" rx="2"/>
+                            </svg>
+                        </div>
+                        <span class="guide-badge">Most Popular</span>
+                        <h3>Jellyfin Media Server</h3>
+                        <p>Complete guide to setting up Jellyfin for streaming your media library anywhere.</p>
+                        <a href="guides/jellyfin.html" class="guide-link">Read Guide →</a>
+                    </article>
+                    <article class="guide-card">
+                        <div class="guide-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                            </svg>
+                        </div>
+                        <h3>Reverse Proxy & SSL</h3>
+                        <p>Set up Nginx Proxy Manager with automatic Let's Encrypt SSL certificates.</p>
+                        <a href="guides/reverse-proxy.html" class="guide-link">Read Guide →</a>
+                    </article>
+                    <article class="guide-card">
+                        <div class="guide-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                                <line x1="8" y1="21" x2="16" y2="21"/>
+                                <line x1="12" y1="17" x2="12" y2="21"/>
+                            </svg>
+                        </div>
+                        <h3>Backup Strategy</h3>
+                        <p>Implement the 3-2-1 backup rule with automated backups for all your services.</p>
+                        <a href="guides/backup.html" class="guide-link">Read Guide →</a>
+                    </article>
+                    <article class="guide-card">
+                        <div class="guide-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="2" y1="12" x2="22" y2="12"/>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                            </svg>
+                        </div>
+                        <h3>Remote Access (VPN)</h3>
+                        <p>Securely access your home lab from anywhere using Tailscale or WireGuard.</p>
+                        <a href="guides/vpn.html" class="guide-link">Read Guide →</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="services">
+            <div class="container">
+                <header class="section-header">
+                    <h2>Popular Self-Hosted Services</h2>
+                    <p>Discover the best open-source applications for your home lab</p>
+                </header>
+                <div class="services-grid">
+                    <article class="service-card">
+                        <div class="service-header">
+                            <div class="service-icon jellyfin">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="23 7 16 12 23 17 23 7"/>
+                                    <rect x="1" y="5" width="15" height="14" rx="2"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3>Jellyfin</h3>
+                                <span class="service-category">Media Server</span>
+                            </div>
+                        </div>
+                        <p>Free, open-source media server. Stream movies, TV shows, music, and photos to any device. No subscriptions, no tracking.</p>
+                        <ul class="service-features">
+                            <li>Hardware transcoding support</li>
+                            <li>Live TV & DVR</li>
+                            <li>Mobile apps & TV apps</li>
+                            <li>Multi-user with parental controls</li>
+                        </ul>
+                        <a href="guides/jellyfin.html" class="service-link">Setup Guide</a>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-header">
+                            <div class="service-icon nextcloud">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3>Nextcloud</h3>
+                                <span class="service-category">File Sync & Share</span>
+                            </div>
+                        </div>
+                        <p>Your own private cloud. File storage, calendar, contacts, office suite, and 200+ apps. Complete data ownership.</p>
+                        <ul class="service-features">
+                            <li>End-to-end encryption</li>
+                            <li>Collaborative editing</li>
+                            <li>Mobile & desktop sync</li>
+                            <li>Calendar & contacts (CalDAV/CardDAV)</li>
+                        </ul>
+                        <a href="guides/nextcloud.html" class="service-link">Setup Guide</a>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-header">
+                            <div class="service-icon homeassistant">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                    <polyline points="9 22 9 12 15 12 15 22"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3>Home Assistant</h3>
+                                <span class="service-category">Home Automation</span>
+                            </div>
+                        </div>
+                        <p>Open-source home automation hub. Control 2000+ devices locally, no cloud required. Privacy-first automation.</p>
+                        <ul class="service-features">
+                            <li>Local control (no internet needed)</li>
+                            <li>2000+ integrations</li>
+                            <li>Powerful automations</li>
+                            <li>Voice control support</li>
+                        </ul>
+                        <a href="guides/homeassistant.html" class="service-link">Setup Guide</a>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-header">
+                            <div class="service-icon portainer">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                                    <path d="M8 17h8M12 17v-5"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3>Portainer</h3>
+                                <span class="service-category">Container Management</span>
+                            </div>
+                        </div>
+                        <p>Visual web UI for managing Docker containers, images, networks, and volumes. Makes container management easy.</p>
+                        <ul class="service-features">
+                            <li>Web-based GUI</li>
+                            <li>Stack deployment (Compose)</li>
+                            <li>Resource monitoring</li>
+                            <li>Access control & RBAC</li>
+                        </ul>
+                        <a href="guides/portainer.html" class="service-link">Setup Guide</a>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-header">
+                            <div class="service-icon uptime">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3>Uptime Kuma</h3>
+                                <span class="service-category">Monitoring</span>
+                            </div>
+                        </div>
+                        <p>Self-hosted monitoring with beautiful status pages. HTTP(s), TCP, DNS, Docker, and push monitoring.</p>
+                        <ul class="service-features">
+                            <li>Multiple notification channels</li>
+                            <li>Public status pages</li>
+                            <li>Docker container monitoring</li>
+                            <li>Certificate expiry alerts</li>
+                        </ul>
+                        <a href="guides/uptime-kuma.html" class="service-link">Setup Guide</a>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-header">
+                            <div class="service-icon authentik">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3>Authentik</h3>
+                                <span class="service-category">Identity Provider</span>
+                            </div>
+                        </div>
+                        <p>Open-source identity provider. SSO, OAuth2/OIDC, SAML, LDAP. Secure all your services with one login.</p>
+                        <ul class="service-features">
+                            <li>Single Sign-On (SSO)</li>
+                            <li>Multi-factor authentication</li>
+                            <li>Passwordless login</li>
+                            <li>User provisioning (SCIM)</li>
+                        </ul>
+                        <a href="guides/authentik.html" class="service-link">Setup Guide</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="hardware" class="hardware">
+            <div class="container">
+                <header class="section-header">
+                    <h2>Hardware Recommendations</h2>
+                    <p>Choose the right hardware for your needs and budget</p>
+                </header>
+                <div class="hardware-tabs">
+                    <button class="tab-btn active" data-tab="entry">Entry Level</button>
+                    <button class="tab-btn" data-tab="mid">Mid Range</button>
+                    <button class="tab-btn" data-tab="high">High Performance</button>
+                </div>
+                <div class="hardware-content">
+                    <div class="hardware-panel active" id="entry">
+                        <div class="hardware-card">
+                            <h3>Raspberry Pi 4/5 (4-8GB)</h3>
+                            <p class="price">~$60-120</p>
+                            <ul>
+                                <li>Perfect for: Pi-hole, Home Assistant, lightweight services</li>
+                                <li>Low power consumption (5-15W)</li>
+                                <li>Limited RAM for heavy containers</li>
+                                <li>ARM architecture (some images unavailable)</li>
+                            </ul>
+                        </div>
+                        <div class="hardware-card">
+                            <h3>Used Thin Client (Dell Wyse, HP t6xx)</h3>
+                            <p class="price">~$50-100</p>
+                            <ul>
+                                <li>x86_64 architecture - runs everything</li>
+                                <li>Low power (10-20W idle)</li>
+                                <li>Usually 4-8GB RAM, 64-128GB SSD</li>
+                                <li>Great value for entry home lab</li>
+                            </ul>
+                        </div>
+                        <div class="hardware-card">
+                            <h3>Old Laptop</h3>
+                            <p class="price">Free - $100</p>
+                            <ul>
+                                <li>Built-in UPS (battery backup)</li>
+                                <li>Screen/keyboard for local access</li>
+                                <li>WiFi + Ethernet</li>
+                                <li>Remove battery for 24/7 operation</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="hardware-panel" id="mid">
+                        <div class="hardware-card">
+                            <h3>Intel NUC / Mini PC (i5/i7 8th-12th gen)</h3>
+                            <p class="price">~$150-350</p>
+                            <ul>
+                                <li>Excellent performance per watt</li>
+                                <li>Quick Sync for hardware transcoding (Jellyfin/Plex)</li>
+                                <li>Supports 32-64GB RAM</li>
+                                <li>Small footprint, quiet</li>
+                            </ul>
+                        </div>
+                        <div class="hardware-card">
+                            <h3>Custom Mini-ITX Build</h3>
+                            <p class="price">~$300-500</p>
+                            <ul>
+                                <li>Full control over components</li>
+                                <li>Multiple drive bays for NAS</li>
+                                <li>Can add GPU for transcoding/AI</li>
+                                <li>Easier to upgrade/repair</li>
+                            </ul>
+                        </div>
+                        <div class="hardware-card">
+                            <h3>Used Enterprise Micro Server (Lenovo ThinkCentre, Dell OptiPlex Micro)</h3>
+                            <p class="price">~$100-200</p>
+                            <ul>
+                                <li>Enterprise build quality</li>
+                                <li>Intel i5/i7, 16-32GB RAM common</li>
+                                <li>Very cheap on secondary market</li>
+                                <li>Low profile, standard parts</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="hardware-panel" id="high">
+                        <div class="hardware-card">
+                            <h3>Used Enterprise Rack Server (Dell R720/R730, HP DL380)</h3>
+                            <p class="price">~$300-600</p>
+                            <ul>
+                                <li>Dual Xeon, 128GB+ RAM, 8+ drive bays</li>
+                                <li>IPMI/iDRAC for remote management</li>
+                                <li>Redundant PSUs, ECC RAM</li>
+                                <li>Loud! Needs separate room/rack</li>
+                            </ul>
+                        </div>
+                        <div class="hardware-card">
+                            <h3>Modern Consumer Build (Ryzen 7/9, i7/i9)</h3>
+                            <p class="price">~$600-1000+</p>
+                            <ul>
+                                <li>Best single-thread performance</li>
+                                <li>Quick Sync / NVENC for transcoding</li>
+                                <li>Quiet, efficient, modern instruction sets</li>
+                                <li>Great for VMs + containers + AI workloads</li>
+                            </ul>
+                        </div>
+                        <div class="hardware-card">
+                            <h3>Synology / QNAP NAS</h3>
+                            <p class="price">~$400-1000+ (diskless)</p>
+                            <ul>
+                                <li>Turnkey solution with great UI</li>
+                                <li>Docker support (Container Manager)</li>
+                                <li>RAID management, snapshots, apps</li>
+                                <li>Premium price for convenience</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="networking" class="networking">
+            <div class="container">
+                <header class="section-header">
+                    <h2>Networking Essentials</h2>
+                    <p>Understand the networking concepts you'll need for a reliable home lab</p>
+                </header>
+                <div class="networking-grid">
+                    <article class="network-card">
+                        <div class="network-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="2" width="20" height="20" rx="2"/>
+                                <line x1="2" y1="12" x2="22" y2="12"/>
+                                <line x1="12" y1="2" x2="12" y2="22"/>
+                            </svg>
+                        </div>
+                        <h3>VLANs & Network Segmentation</h3>
+                        <p>Separate IoT, management, and trusted devices for security. Configure on managed switches and router.</p>
+                        <a href="guides/vlans.html" class="network-link">Learn More →</a>
+                    </article>
+                    <article class="network-card">
+                        <div class="network-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                            </svg>
+                        </div>
+                        <h3>DNS & Local Domains</h3>
+                        <p>Set up Pi-hole or AdGuard Home for ad-blocking and local DNS. Use .local or custom TLD for services.</p>
+                        <a href="guides/dns.html" class="network-link">Learn More →</a>
+                    </article>
+                    <article class="network-card">
+                        <div class="network-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </div>
+                        <h3>Reverse Proxy</h3>
+                        <p>Single entry point for all services. Automatic HTTPS with Let's Encrypt. Path-based or subdomain routing.</p>
+                        <a href="guides/reverse-proxy.html" class="network-link">Learn More →</a>
+                    </article>
+                    <article class="network-card">
+                        <div class="network-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="1" x2="12" y2="23"/>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                            </svg>
+                        </div>
+                        <h3>VPN / Remote Access</h3>
+                        <p>Tailscale (easiest), WireGuard (performance), or OpenVPN. Access services securely from anywhere.</p>
+                        <a href="guides/vpn.html" class="network-link">Learn More →</a>
+                    </article>
+                    <article class="network-card">
+                        <div class="network-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="16 18 22 12 16 6"/>
+                                <polyline points="8 6 2 12 8 18"/>
+                            </svg>
+                        </div>
+                        <h3>Firewall Rules</h3>
+                        <p>Default deny inbound. Allow only what's needed. Use UFW, firewalld, or OPNsense/pfSense for advanced rules.</p>
+                        <a href="guides/firewall.html" class="network-link">Learn More →</a>
+                    </article>
+                    <article class="network-card">
+                        <div class="network-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <h3>Security Hardening</h3>
+                        <p>Fail2ban, SSH keys only, 2FA on everything, regular updates, minimal attack surface.</p>
+                        <a href="guides/security.html" class="network-link">Learn More →</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="resources" class="resources">
+            <div class="container">
+                <header class="section-header">
+                    <h2>Additional Resources</h2>
+                    <p>Helpful links, communities, and tools for your home lab journey</p>
+                </header>
+                <div class="resources-grid">
+                    <div class="resource-category">
+                        <h3>Communities</h3>
+                        <ul class="resource-list">
+                            <li><a href="https://reddit.com/r/homelab" target="_blank" rel="noopener">r/homelab</a> - Main community (2M+ members)</li>
+                            <li><a href="https://reddit.com/r/selfhosted" target="_blank" rel="noopener">r/selfhosted</a> - Software focused</li>
+                            <li><a href="https://reddit.com/r/jellyfin" target="_blank" rel="noopener">r/jellyfin</a> - Jellyfin specific</li>
+                            <li><a href="https://discord.gg/homelab" target="_blank" rel="noopener">Home Lab Discord</a> - Real-time chat</li>
+                        </ul>
+                    </div>
+                    <div class="resource-category">
+                        <h3>Awesome Lists</h3>
+                        <ul class="resource-list">
+                            <li><a href="https://github.com/awesome-selfhosted/awesome-selfhosted" target="_blank" rel="noopener">Awesome Self-Hosted</a> - Curated software list</li>
+                            <li><a href="https://github.com/kahun/awesome-sysadmin" target="_blank" rel="noopener">Awesome Sysadmin</a> - Admin resources</li>
+                            <li><a href="https://github.com/trimstray/the-book-of-secret-knowledge" target="_blank" rel="noopener">Book of Secret Knowledge</a> - CLI/tools reference</li>
+                        </ul>
+                    </div>
+                    <div class="resource-category">
+                        <h3>Tools & Dashboards</h3>
+                        <ul class="resource-list">
+                            <li><a href="https://github.com/onedr0p/home-ops" target="_blank" rel="noopener">home-ops</a> - Kubernetes at home</li>
+                            <li><a href="https://github.com/bilalcaliskan/homelab-dashboard" target="_blank" rel="noopener">Homelab Dashboard</a> - Service homepage</li>
+                            <li><a href="https://github.com/linuxserver/docker-dashboard" target="_blank" rel="noopener">Docker Dashboard</a> - Container monitoring</li>
+                        </ul>
+                    </div>
+                    <div class="resource-category">
+                        <h3>Learning Resources</h3>
+                        <ul class="resource-list">
+                            <li><a href="https://docs.linuxserver.io/" target="_blank" rel="noopener">LinuxServer.io Docs</a> - Container images & guides</li>
+                            <li><a href="https://jellyfin.org/docs/" target="_blank" rel="noopener">Jellyfin Documentation</a> - Official docs</li>
+                            <li><a href="https://docs.docker.com/" target="_blank" rel="noopener">Docker Documentation</a> - Official Docker docs</li>
+                            <li><a href="https://wiki.archlinux.org/" target="_blank" rel="noopener">Arch Wiki</a> - Best Linux reference</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="container">
+                <h2>Ready to Start Your Home Lab?</h2>
+                <p>Begin with the basics guide and work your way up. Every expert started as a beginner.</p>
+                <a href="guides/basics.html" class="btn btn-primary btn-large">Start with Basics →</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <path d="M8 17h8M12 17v-5"/>
+                        </svg>
+                        <span>HomeLab Guide</span>
+                    </a>
+                    <p>Free, open-source guides for building your own home lab. No ads, no tracking, just knowledge.</p>
+                </div>
+                <nav class="footer-nav">
+                    <div class="footer-section">
+                        <h4>Guides</h4>
+                        <ul>
+                            <li><a href="guides/basics.html">Home Lab Basics</a></li>
+                            <li><a href="guides/docker.html">Docker Fundamentals</a></li>
+                            <li><a href="guides/jellyfin.html">Jellyfin Server</a></li>
+                            <li><a href="guides/reverse-proxy.html">Reverse Proxy & SSL</a></li>
+                            <li><a href="guides/backup.html">Backup Strategy</a></li>
+                            <li><a href="guides/vpn.html">Remote Access (VPN)</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="guides/jellyfin.html">Jellyfin</a></li>
+                            <li><a href="guides/nextcloud.html">Nextcloud</a></li>
+                            <li><a href="guides/homeassistant.html">Home Assistant</a></li>
+                            <li><a href="guides/portainer.html">Portainer</a></li>
+                            <li><a href="guides/uptime-kuma.html">Uptime Kuma</a></li>
+                            <li><a href="guides/authentik.html">Authentik</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Networking</h4>
+                        <ul>
+                            <li><a href="guides/vlans.html">VLANs & Segmentation</a></li>
+                            <li><a href="guides/dns.html">DNS & Local Domains</a></li>
+                            <li><a href="guides/firewall.html">Firewall Rules</a></li>
+                            <li><a href="guides/security.html">Security Hardening</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with ❤️ for the self-hosting community. <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a></p>
+                <p class="license">Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

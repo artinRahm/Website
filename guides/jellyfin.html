@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to setting up Jellyfin media server with hardware transcoding, metadata, remote access, and clients. The most popular home lab service.">
+    <title>Jellyfin Media Server - HomeLab Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="../index.html" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 17h8M12 17v-5"/>
+                </svg>
+                <span>HomeLab Guide</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <ul class="nav-links">
+                <li><a href="../index.html#guides">Guides</a></li>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../index.html#hardware">Hardware</a></li>
+                <li><a href="../index.html#networking">Networking</a></li>
+                <li><a href="../index.html#resources">Resources</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="guide-page">
+        <article class="guide-content container">
+            <header class="guide-header">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="../index.html">Home</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <a href="../index.html#guides">Guides</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <span aria-current="page">Jellyfin Media Server</span>
+                </nav>
+                <h1>Jellyfin Media Server</h1>
+                <p class="guide-description">Complete guide to setting up Jellyfin - the free, open-source media server. Hardware transcoding, metadata management, remote access, and client apps.</p>
+                <div class="guide-meta">
+                    <span class="guide-difficulty beginner">Beginner</span>
+                    <span class="guide-time">~30 min read</span>
+                    <span class="guide-updated">Updated 2026</span>
+                </div>
+            </header>
+
+            
+
+            <section id="why-jellyfin">
+                <h2>Why Jellyfin?</h2>
+
+                <div class="reasons-grid">
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <h3>Free & Open Source</h3>
+                        <p>No subscriptions, no premium features locked behind paywall. MIT licensed. Community-driven development.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </div>
+                        <h3>Privacy First</h3>
+                        <p>Your media, your server, your data. No telemetry, no tracking, no account required. Runs entirely on your hardware.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 17h8M12 17v-5"/></svg>
+                        </div>
+                        <h3>Hardware Transcoding</h3>
+                        <p>Intel Quick Sync, NVIDIA NVENC, AMD VCE/VCN, Apple VideoToolbox. Efficient 4K→1080p transcoding on modest hardware.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <h3>Live TV & DVR</h3>
+                        <p>HDHomeRun, IPTV, M3U playlists. Record, schedule, series recordings. Electronic program guide (EPG).</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                        <h3>Multi-User & Parental Controls</h3>
+                        <p>Multiple users with individual libraries, watch history, preferences. Content ratings, PIN protection for kids.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <h3>Great Client Ecosystem</h3>
+                        <p>Official apps for iOS, Android, Android TV, Fire TV, Roku, Web, desktop. Third-party: Infuse, Swiftfin, Findroid.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="hardware-reqs">
+                <h2>Hardware Requirements</h2>
+
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Use Case</th>
+                                <th>CPU</th>
+                                <th>RAM</th>
+                                <th>GPU / Transcoding</th>
+                                <th>Storage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Direct Play Only</td>
+                                <td>Any (Pi 4, old laptop)</td>
+                                <td>2-4 GB</td>
+                                <td>None needed</td>
+                                <td>Media drive</td>
+                            </tr>
+                            <tr>
+                                <td>1-2 Simultaneous Transcodes</td>
+                                <td>Intel 8th-12th gen (Quick Sync)</td>
+                                <td>8-16 GB</td>
+                                <td>Intel iGPU (Quick Sync)</td>
+                                <td>SSD for metadata + HDD for media</td>
+                            </tr>
+                            <tr>
+                                <td>4+ Transcodes / 4K HDR</td>
+                                <td>Intel 11th-13th gen / AMD Ryzen 5000+</td>
+                                <td>16-32 GB</td>
+                                <td>Intel Quick Sync / NVIDIA NVENC</td>
+                                <td>NVMe metadata + HDD array</td>
+                            </tr>
+                            <tr>
+                                <td>Heavy Multi-User / 4K Remux</td>
+                                <td>Intel Xeon / AMD EPYC / i9 / Ryzen 9</td>
+                                <td>32-64 GB</td>
+                                <td>Multiple GPUs / Intel Arc</td>
+                                <td>All-NVMe or fast RAID</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Intel Quick Sync Generations</h3>
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Generation</th>
+                                <th>Code Name</th>
+                                <th>H.264</th>
+                                <th>HEVC (H.265)</th>
+                                <th>VP9</th>
+                                <th>AV1 Decode</th>
+                                <th>AV1 Encode</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>6th Gen (Skylake)</td>
+                                <td>Gen 9</td>
+                                <td>✅</td>
+                                <td>✅ (8-bit)</td>
+                                <td>❌</td>
+                                <td>❌</td>
+                                <td>❌</td>
+                            </tr>
+                            <tr>
+                                <td>7th Gen (Kaby Lake)</td>
+                                <td>Gen 9.5</td>
+                                <td>✅</td>
+                                <td>✅ 10-bit</td>
+                                <td>✅ Decode</td>
+                                <td>❌</td>
+                                <td>❌</td>
+                            </tr>
+                            <tr>
+                                <td>8th-10th Gen</td>
+                                <td>Gen 9.5/11</td>
+                                <td>✅</td>
+                                <td>✅ 10-bit</td>
+                                <td>✅</td>
+                                <td>❌</td>
+                                <td>❌</td>
+                            </tr>
+                            <tr>
+                                <td>11th Gen (Tiger Lake)</td>
+                                <td>Xe</td>
+                                <td>✅</td>
+                                <td>✅ 10-bit</td>
+                                <td>✅</td>
+                                <td>✅</td>
+                                <td>❌</td>
+                            </tr>
+                            <tr>
+                                <td>12th-13th Gen</td>
+                                <td>Xe</td>
+                                <td>✅</td>
+                                <td>✅ 10-bit</td>
+                                <td>✅</td>
+                                <td>✅</td>
+                                <td>✅ (12th+)</td>
+                            </tr>
+                            <tr>
+                                <td>Intel Arc (Alchemist)</td>
+                                <td>Xe-HPG</td>
+                                <td>✅</td>
+                                <td>✅ 10-bit</td>
+                                <td>✅</td>
+                                <td>✅</td>
+                                <td>✅</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="docker-setup">
+                <h2>Docker Deployment</h2>
+
+                <h3>Basic Docker Compose</h3>
+                <pre><code class="language-yaml">version: '3.8'
+
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:10.10.7
+    container_name: jellyfin
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - jellyfin-config:/config
+      - jellyfin-metadata:/data
+      - /mnt/media:/media:ro
+    ports:
+      - "8096:8096"
+      - "8920:8920"  # HTTPS (optional)
+      - "1900:1900/udp"  # DLNA
+    environment:
+      - TZ=America/New_York
+      - JELLYFIN_PublishedServerUrl=https://jellyfin.yourdomain.com
+    # Uncomment for hardware transcoding (see next section)
+    # devices:
+    #   - /dev/dri:/dev/dri
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8096/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  homelab:
+    external: true
+
+volumes:
+  jellyfin-config:
+  jellyfin-metadata:</code></pre>
+
+                <h3>Deploy</h3>
+                <pre><code class="language-bash">mkdir -p ~/jellyfin && cd ~/jellyfin
+# Save as docker-compose.yml
+docker compose up -d
+
+# Check logs
+docker compose logs -f jellyfin</code></pre>
+
+                <h3>Initial Setup Wizard</h3>
+                <ol class="steps">
+                    <li>Open <code>http://your-server:8096</code></li>
+                    <li>Create admin user (username/password)</li>
+                    <li>Add media libraries (Movies, TV Shows, Music, Photos)</li>
+                    <li>Configure metadata providers (TheMovieDB, TheTVDB, MusicBrainz)</li>
+                    <li>Set up remote access (skip - we'll use reverse proxy)</li>
+                </ol>
+            </section>
+
+            <section id="hw-transcoding">
+                <h2>Hardware Transcoding (Intel Quick Sync)</h2>
+
+                <h3>Host Requirements</h3>
+                <pre><code class="language-bash"># Check if iGPU is available
+ls -la /dev/dri/
+# Should show: renderD128, card0
+
+# Check Quick Sync support
+vainfo
+# Look for: VAProfileH264Main, VAProfileHEVCMain, etc.
+
+# Install Intel media drivers (Ubuntu)
+sudo apt install -y intel-media-va-driver-non-free vainfo</code></pre>
+
+                <h3>Docker Compose with Hardware Transcoding</h3>
+                <pre><code class="language-yaml">services:
+  jellyfin:
+    image: jellyfin/jellyfin:10.10.7
+    # ... other config ...
+    devices:
+      - /dev/dri:/dev/dri
+    # Optional: limit GPU memory
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: "intel.com/gpu"
+    #           count: 1
+    #           capabilities: ["gpu"]</code></pre>
+
+                <h3>Jellyfin Transcoding Settings</h3>
+                <p>In Jellyfin Dashboard → <strong>Playback</strong> → <strong>Transcoding</strong>:</p>
+                <ul class="feature-list">
+                    <li><strong>Enable hardware acceleration:</strong> ✅ On</li>
+                    <li><strong>Hardware acceleration device:</strong> <code>/dev/dri/renderD128</code></li>
+                    <li><strong>Enable hardware encoding:</strong> ✅ On</li>
+                    <li><strong>Encoder preset:</strong> <code>balanced</code> (or <code>speed</code> for older iGPU)</li>
+                    <li><strong>Enable VA-API:</strong> ✅ On</li>
+                    <li><strong>Enable Intel Quick Sync:</strong> ✅ On</li>
+                    <li><strong>Allow HEVC encoding:</strong> ✅ On (if iGPU supports)</li>
+                    <li><strong>Fallback to software:</strong> ✅ On</li>
+                </ul>
+
+                <h3>Verify Hardware Transcoding Works</h3>
+                <ol class="steps">
+                    <li>Play a video that requires transcoding (HEVC → H.264, or 4K → 1080p)</li>
+                    <li>In Jellyfin Dashboard → <strong>Dashboard</strong> → <strong>Active Sessions</strong></li>
+                    <li>Look for <code>VideoCodec: hevc → h264 (hardware)</code> or similar</li>
+                    <li>On host: <code>intel_gpu_top</code> should show GPU usage</li>
+                </ol>
+
+                <h3>NVIDIA NVENC (Alternative)</h3>
+                <pre><code class="language-yaml">services:
+  jellyfin:
+    image: jellyfin/jellyfin:10.10.7
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu, compute, video]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility</code></pre>
+            </section>
+
+            <section id="library-setup">
+                <h2>Library Setup & Metadata</h2>
+
+                <h3>Folder Structure</h3>
+                <pre><code class="text">/mnt/media/
+├── Movies/
+│   ├── Movie Name (Year)/
+│   │   ├── Movie Name (Year).mkv
+│   │   ├── poster.jpg
+│   │   └── backdrop.jpg
+├── TV Shows/
+│   ├── Show Name/
+│   │   ├── Season 01/
+│   │   │   ├── Show Name - S01E01 - Episode Title.mkv
+│   │   │   └── Show Name - S01E02 - Episode Title.mkv
+│   │   ├── poster.jpg
+│   │   └── fanart.jpg
+├── Music/
+│   ├── Artist/
+│   │   ├── Album/
+│   │   │   ├── 01 - Track.mp3
+│   │   │   └── cover.jpg
+├── Photos/
+│   ├── 2024/
+│   │   ├── vacation/
+│   │   └── family/
+└── Other/</code></pre>
+
+                <h3>Library Configuration</h3>
+                <ol class="steps">
+                    <li>Dashboard → <strong>Libraries</strong> → <strong>+</strong></li>
+                    <li>Content Type: Movies / TV Shows / Music / Photos / Books</li>
+                    <li>Display Name: "Movies"</li>
+                    <li>Folders: <code>/media/Movies</code></li>
+                    <li><strong>Metadata</strong> tab:
+                        <ul>
+                            <li>Metadata fetcher: TheMovieDB (movies), TheTVDB (TV), MusicBrainz (music)</li>
+                            <li>Enable: "Download images", "Save local metadata"</li>
+                            <li>Preferred language: English (or your preference)</li>
+                            <li>Country: US (for correct release dates/ratings)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Scan on library creation</strong> + <strong>Enable real-time monitoring</strong></li>
+                </ol>
+
+                <h3>Metadata Tips</h3>
+                <ul class="feature-list">
+                    <li>Use <strong>Tiny Media Manager</strong> or <strong>FileBot</strong> to pre-fetch metadata/nfo files</li>
+                    <li>Name files exactly: <code>Movie Name (Year).ext</code> and <code>Show Name - S01E01 - Title.ext</code></li>
+                    <li>Embed subtitles in MKV or use <code>.srt</code> sidecar with same name</li>
+                    <li>For collections: create <code>collections.nfo</code> or use Jellyfin's collection manager</li>
+                </ul>
+            </section>
+
+            <section id="remote-access">
+                <h2>Remote Access</h2>
+
+                <h3>Option 1: Tailscale (Easiest)</h3>
+                <pre><code class="language-bash"># On Jellyfin server
+sudo tailscale up --advertise-routes=192.168.1.0/24
+
+# On client devices: install Tailscale app, sign in
+# Access: http://jellyfin-hostname:8096 or http://100.x.y.z:8096</code></pre>
+
+                <h3>Option 2: Reverse Proxy + SSL (Public Access)</h3>
+                <p>Using Nginx Proxy Manager (see <a href="reverse-proxy.html">Reverse Proxy Guide</a>):</p>
+                <ol class="steps">
+                    <li>Add proxy host: <code>jellyfin.yourdomain.com</code></li>
+                    <li>Forward to: <code>jellyfin:8096</code></li>
+                    <li>Enable WebSocket support (required for sync/playback)</li>
+                    <li>SSL: Let's Encrypt cert, Force SSL, HSTS</li>
+                    <li>In Jellyfin: Dashboard → Networking → <strong>Published Server URL</strong> = <code>https://jellyfin.yourdomain.com</code></li>
+                </ol>
+
+                <h3>Jellyfin Networking Settings</h3>
+                <pre><code class="language-yaml"># In docker-compose.yml, add:
+environment:
+  - JELLYFIN_PublishedServerUrl=https://jellyfin.yourdomain.com
+  # If using Tailscale only:
+  # - JELLYFIN_PublishedServerUrl=http://jellyfin-tailnet-name:8096</code></pre>
+
+                <h3>Clients: Remote Access Setup</h3>
+                <ul class="feature-list">
+                    <li><strong>Mobile apps:</strong> Enter server URL manually or auto-discover via Tailscale</li>
+                    <li><strong>Android TV / Fire TV:</strong> Use "Enter server URL" option</li>
+                    <li><strong>Infuse (iOS):</strong> Add Jellyfin share via URL</li>
+                    <li><strong>Web:</strong> Just open <code>https://jellyfin.yourdomain.com</code></li>
+                </ul>
+            </section>
+
+            <section id="clients">
+                <h2>Client Apps</h2>
+
+                <div class="client-grid">
+                    <div class="client-card">
+                        <h3>Official Apps</h3>
+                        <ul>
+                            <li><strong>Web:</strong> Any browser at <code>:8096/web</code></li>
+                            <li><strong>Android:</strong> Play Store / F-Droid</li>
+                            <li><strong>iOS/iPadOS:</strong> App Store</li>
+                            <li><strong>Android TV:</strong> Play Store (NVIDIA Shield, Chromecast, etc.)</li>
+                            <li><strong>Fire TV:</strong> Amazon Appstore</li>
+                            <li><strong>Roku:</strong> Channel Store (beta)</li>
+                            <li><strong>Desktop:</strong> Windows/Mac/Linux (Electron)</li>
+                        </ul>
+                    </div>
+                    <div class="client-card">
+                        <h3>Third-Party (Often Better)</h3>
+                        <ul>
+                            <li><strong>Infuse (iOS/tvOS/macOS):</strong> Best playback, paid but worth it</li>
+                            <li><strong>Swiftfin (iOS):</strong> Native SwiftUI, free, open source</li>
+                            <li><strong>Findroid (Android):</strong> Material You, feature-rich</li>
+                            <li><strong>Jellyfin Media Player (Desktop):</strong> MPV-based, better codec support</li>
+                            <li><strong>Jellyfin for Kodi:</strong> Full Kodi integration</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Offline Sync</h3>
+                <p>Download media for offline viewing (mobile apps):</p>
+                <ul class="feature-list">
+                    <li>Enable in Jellyfin: Dashboard → Users → <strong>Enable sync</strong></li>
+                    <li>Set max sync bitrate (e.g., 20 Mbps for 1080p)</li>
+                    <li>On mobile app: long-press item → "Download" or "Sync"</li>
+                    <li>Manage in Dashboard → <strong>Sync Jobs</strong></li>
+                </ul>
+            </section>
+
+            <section id="optimization">
+                <h2>Optimization & Tips</h2>
+
+                <h3>Performance Tuning</h3>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <h4>Metadata on SSD</h4>
+                        <p>Store <code>/config</code> and <code>/data</code> on SSD/NVMe. HDD for media only. Massive UI speedup.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Chapter Images / Preview Thumbnails</h4>
+                        <p>Generate in Dashboard → <strong>Scheduled Tasks</strong> → "Generate chapter images" + "Generate video preview thumbnails". Run weekly.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Transcode Cache</h4>
+                        <p>Set transcode cache to RAM disk: <code>--mount=type=tmpfs,destination=/transcodes</code> in Docker.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Database Maintenance</h4>
+                        <p>Run <code>VACUUM</code> on SQLite DB monthly. Dashboard → Scheduled Tasks → "Database maintenance".</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Scan Schedules</h4>
+                        <p>Set library scans to run at night. Real-time monitoring + daily deep scan.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>Image Optimization</h4>
+                        <p>Dashboard → Libraries → "Optimize images" - creates smaller versions for thumbnails.</p>
+                    </div>
+                </div>
+
+                <h3>Quality Profiles</h3>
+                <p>Dashboard → <strong>Playback</strong> → <strong>Quality Profiles</strong> - Create profiles for different scenarios:</p>
+                <pre><code class="language-text">Home (Direct Play):      Max bitrate: 100 Mbps, Allow direct play: ✅
+Remote (WiFi):            Max bitrate: 30 Mbps,  Allow direct play: ✅
+Remote (Cellular):        Max bitrate: 8 Mbps,   Allow direct play: ❌
+Remote (Slow):            Max bitrate: 3 Mbps,   Allow direct play: ❌</code></pre>
+            </section>
+
+            <section id="troubleshooting">
+                <h2>Troubleshooting</h2>
+
+                <div class="troubleshooting-grid">
+                    <div class="issue-card">
+                        <h4>Hardware transcoding not working</h4>
+                        <pre><code class="language-bash"># Verify device passthrough
+docker exec jellyfin ls -la /dev/dri/
+
+# Check permissions
+docker exec jellyfin ffmpeg -init_hw_device vaapi=foo:/dev/dri/renderD128 -f lavfi -i nullsrc -c:v h264_vaapi -f null -
+
+# Check Jellyfin logs for "vaapi" or "quick_sync"</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Buffering / Playback issues</h4>
+                        <pre><code class="language-bash"># Check network path
+# Client → Reverse Proxy → Jellyfin
+# Try direct LAN IP to isolate proxy
+
+# Enable "Direct Play" in client settings
+# Lower remote quality profile</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Metadata not fetching</h4>
+                        <pre><code class="language-bash"># Check internet access from container
+docker exec jellyfin curl -I https://api.themoviedb.org
+
+# Verify API keys in Dashboard → Metadata
+# TheMovieDB: Free API key required
+# TheTVDB: Paid API key now required</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>DLNA not showing</h4>
+                        <pre><code class="language-yaml"># Ensure ports exposed
+ports:
+  - "1900:1900/udp"
+  - "7359:7359"  # SSDP alternate
+
+# Check firewall
+sudo ufw allow 1900/udp</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>4K HDR tone mapping issues</h4>
+                        <p>Intel Quick Sync supports HDR→SDR tone mapping (11th gen+). In transcoding settings, enable "Tone mapping" and set target: BT.709 (SDR).</p>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Subtitle issues</h4>
+                        <p>PGS (Blu-ray) subtitles require burn-in. Enable "Burn subtitles" in playback settings or use SRT/VTT instead.</p>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="guide-navigation">
+                <a href="../index.html#guides" class="btn btn-secondary">← Back to Guides</a>
+                <a href="nextcloud.html" class="btn btn-primary">Next: Nextcloud →</a>
+            </nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <path d="M8 17h8M12 17v-5"/>
+                        </svg>
+                        <span>HomeLab Guide</span>
+                    </a>
+                    <p>Free, open-source guides for building your own home lab. No ads, no tracking, just knowledge.</p>
+                </div>
+                <nav class="footer-nav">
+                    <div class="footer-section">
+                        <h4>Guides</h4>
+                        <ul>
+                            <li><a href="basics.html">Home Lab Basics</a></li>
+                            <li><a href="docker.html">Docker Fundamentals</a></li>
+                            <li><a href="jellyfin.html">Jellyfin Server</a></li>
+                            <li><a href="reverse-proxy.html">Reverse Proxy & SSL</a></li>
+                            <li><a href="backup.html">Backup Strategy</a></li>
+                            <li><a href="vpn.html">Remote Access (VPN)</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="jellyfin.html">Jellyfin</a></li>
+                            <li><a href="nextcloud.html">Nextcloud</a></li>
+                            <li><a href="homeassistant.html">Home Assistant</a></li>
+                            <li><a href="portainer.html">Portainer</a></li>
+                            <li><a href="uptime-kuma.html">Uptime Kuma</a></li>
+                            <li><a href="authentik.html">Authentik</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Networking</h4>
+                        <ul>
+                            <li><a href="vlans.html">VLANs & Segmentation</a></li>
+                            <li><a href="dns.html">DNS & Local Domains</a></li>
+                            <li><a href="firewall.html">Firewall Rules</a></li>
+                            <li><a href="security.html">Security Hardening</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with ❤️ for the self-hosting community. <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a></p>
+                <p class="license">Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>

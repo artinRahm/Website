@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Implement the 3-2-1 backup rule with automated backups for all your home lab services. Protect your data from hardware failure, ransomware, and mistakes.">
+    <title>Backup Strategy - HomeLab Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="../index.html" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 17h8M12 17v-5"/>
+                </svg>
+                <span>HomeLab Guide</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <ul class="nav-links">
+                <li><a href="../index.html#guides">Guides</a></li>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../index.html#hardware">Hardware</a></li>
+                <li><a href="../index.html#networking">Networking</a></li>
+                <li><a href="../index.html#resources">Resources</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="guide-page">
+        <article class="guide-content container">
+            <header class="guide-header">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="../index.html">Home</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <a href="../index.html#guides">Guides</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <span aria-current="page">Backup Strategy</span>
+                </nav>
+                <h1>Backup Strategy</h1>
+                <p class="guide-description">Implement the 3-2-1 backup rule with automated backups for all your services. Protect your data from hardware failure, ransomware, and human error.</p>
+                <div class="guide-meta">
+                    <span class="guide-difficulty intermediate">Intermediate</span>
+                    <span class="guide-time">~30 min read</span>
+                    <span class="guide-updated">Updated 2026</span>
+                </div>
+            </header>
+
+            
+
+            <section id="321-rule">
+                <h2>The 3-2-1 Backup Rule</h2>
+                <p>The gold standard for data protection:</p>
+
+                <div class="rule-grid">
+                    <div class="rule-card">
+                        <div class="rule-number">3</div>
+                        <h3>Three Copies</h3>
+                        <p>Original + 2 backups. One primary, two redundant copies.</p>
+                    </div>
+                    <div class="rule-card">
+                        <div class="rule-number">2</div>
+                        <h3>Two Media Types</h3>
+                        <p>Different storage media (e.g., local SSD + external HDD + cloud). Protects against media-specific failures.</p>
+                    </div>
+                    <div class="rule-card">
+                        <div class="rule-number">1</div>
+                        <h3>One Offsite</h3>
+                        <p>At least one copy in a different physical location. Protects against fire, theft, ransomware, natural disasters.</p>
+                    </div>
+                </div>
+
+                <div class="callout callout-warning">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <div>
+                        <strong>RAID is not a backup.</strong> RAID protects against drive failure only. It doesn't protect against deletion, corruption, ransomware, fire, or controller failure. You need actual backups.
+                    </div>
+                </div>
+            </section>
+
+            <section id="what-to-backup">
+                <h2>What to Back Up</h2>
+
+                <h3>Critical (Must Have)</h3>
+                <ul class="feature-list">
+                    <li><strong>Docker volumes</strong> - App data, databases, configs (Jellyfin metadata, Nextcloud data, Home Assistant config)</li>
+                    <li><strong>Docker Compose files</strong> - Your infrastructure as code</li>
+                    <li><strong>.env files</strong> - Secrets, passwords, API keys</li>
+                    <li><strong>SSL certificates</strong> - Let's Encrypt certs from NPM</li>
+                    <li><strong>SSH keys</strong> - Server access keys</li>
+                    <li><strong>Password manager vault</strong> - If self-hosted (Vaultwarden)</li>
+                </ul>
+
+                <h3>Important (Should Have)</h3>
+                <ul class="feature-list">
+                    <li><strong>Media libraries</strong> - If you can't easily re-acquire (personal photos, home videos)</li>
+                    <li><strong>Configuration files</strong> - /etc, custom nginx configs, scripts</li>
+                    <li><strong>Monitoring data</strong> - Grafana dashboards, Prometheus data (optional)</li>
+                </ul>
+
+                <h3>Optional (Nice to Have)</h3>
+                <ul class="feature-list">
+                    <li><strong>Downloaded media</strong> - Movies, TV shows (can re-download, but slow)</li>
+                    <li><strong>Container images</strong> - Can re-pull from registries</li>
+                    <li><strong>OS / system files</strong> - Reinstall OS, restore configs instead</li>
+                </ul>
+            </section>
+
+            <section id="tools">
+                <h2>Backup Tools Comparison</h2>
+
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tool</th>
+                                <th>Type</th>
+                                <th>Encryption</th>
+                                <th>Deduplication</th>
+                                <th>Cloud Support</th>
+                                <th>UI</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Borgmatic/Borg</strong></td>
+                                <td>Config-driven</td>
+                                <td>✅ AES-256</td>
+                                <td>✅ Excellent</td>
+                                <td>Via rclone/rsh</td>
+                                <td>❌ CLI only</td>
+                                <td>Linux servers, efficiency</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Restic</strong></td>
+                                <td>CLI</td>
+                                <td>✅ AES-256</td>
+                                <td>✅ Good</td>
+                                <td>✅ Native (S3, B2, etc.)</td>
+                                <td>❌ CLI only</td>
+                                <td>Cross-platform, cloud-native</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Duplicati</strong></td>
+                                <td>Web UI</td>
+                                <td>✅ AES-256</td>
+                                <td>✅ Good</td>
+                                <td>✅ Many providers</td>
+                                <td>✅ Web UI</td>
+                                <td>GUI preference, Windows</td>
+                            </tr>
+                            <tr>
+                                <td><strong>UrBackup</strong></td>
+                                <td>Client/Server</td>
+                                <td>✅ Optional</td>
+                                <td>✅ Good</td>
+                                <td>❌ Local only</td>
+                                <td>✅ Web UI</td>
+                                <td>Client backups (PCs/laptops)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>rsync + cron</strong></td>
+                                <td>Manual scripting</td>
+                                <td>❌ Manual</td>
+                                <td>❌ None</td>
+                                <td>❌ Manual</td>
+                                <td>❌ CLI</td>
+                                <td>Simple local mirrors</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout callout-info">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    <div>
+                        <strong>My recommendation:</strong> <strong>Borgmatic + BorgBackup</strong> for local + rclone to cloud, or <strong>Restic</strong> for native cloud support. Both are battle-tested, encrypted, and deduplicated.
+                    </div>
+                </div>
+            </section>
+
+            <section id="borgmatic">
+                <h2>Borgmatic + BorgBackup</h2>
+                <p><strong>BorgBackup</strong> (borg) is a deduplicating, compressing, encrypting backup tool. <strong>Borgmatic</strong> wraps it with declarative YAML config and scheduling.</p>
+
+                <h3>Installation</h3>
+                <pre><code class="language-bash"># Ubuntu/Debian
+sudo apt install -y borgbackup borgmatic
+
+# Or via pipx (recommended for latest)
+pipx install borgmatic
+
+# Verify
+borgmatic --version
+borg --version</code></pre>
+
+                <h3>Configuration (config.yaml)</h3>
+                <pre><code class="language-yaml"># /etc/borgmatic/config.yaml or ~/.config/borgmatic/config.yaml
+location:
+    source_directories:
+        - /home/user/docker           # Compose files, .env
+        - /var/lib/docker/volumes     # Docker volumes
+        - /etc/letsencrypt            # SSL certs
+        - /root/.ssh                  # SSH keys
+    repositories:
+        - path: /mnt/backup/borg-repo
+          label: local
+        - path: rclone:remote:borg-repo
+          label: cloud
+    exclude_patterns:
+        - '*/cache/*'
+        - '*/tmp/*'
+        - '*/logs/*.log'
+        - '*.pyc'
+        - '__pycache__'
+    exclude_if_present: .nobackup
+
+storage:
+    encryption_passphrase: "your-strong-passphrase-here"
+    # Or use keyfile: encryption_keyfile: /path/to/keyfile
+
+retention:
+    keep_daily: 7
+    keep_weekly: 4
+    keep_monthly: 6
+    keep_yearly: 2
+    prefix: "backup-"
+
+consistency:
+    checks:
+        - name: repository
+        - name: archives
+          frequency: 2 weeks
+    check_last: 3
+
+hooks:
+    before_backup:
+        - echo "Starting backup at $(date)"
+    after_backup:
+        - echo "Backup completed at $(date)"
+    on_error:
+        - echo "Backup failed at $(date)" | mail -s "Backup Failed" admin@example.com</code></pre>
+
+                <h3>Initialize Repository</h3>
+                <pre><code class="language-bash"># Local repository
+borgmatic init --encryption repokey --repository /mnt/backup/borg-repo
+
+# Cloud via rclone (configure rclone first)
+borgmatic init --encryption repokey --repository rclone:remote:borg-repo</code></pre>
+
+                <h3>Run Backups</h3>
+                <pre><code class="language-bash"># Manual run
+borgmatic --verbosity 1 --files
+
+# Dry run
+borgmatic --dry-run --verbosity 1
+
+# With systemd timer (automatic)
+sudo systemctl enable --now borgmatic.timer
+
+# Check timer status
+systemctl list-timers | grep borgmatic</code></pre>
+
+                <h3>Prune & Compact</h3>
+                <pre><code class="language-bash"># Prune old backups per retention policy
+borgmatic prune --verbosity 1
+
+# Compact repository (reclaim space from deleted data)
+borgmatic compact --verbosity 1</code></pre>
+            </section>
+
+            <section id="restic">
+                <h2>Restic + Rclone</h2>
+                <p><strong>Restic</strong> is a modern, fast, encrypted backup tool with native support for many cloud providers. <strong>Rclone</strong> handles the cloud transport.</p>
+
+                <h3>Installation</h3>
+                <pre><code class="language-bash"># Ubuntu/Debian
+sudo apt install -y restic rclone
+
+# Or download latest binaries
+# https://github.com/restic/restic/releases
+# https://rclone.org/downloads/</code></pre>
+
+                <h3>Rclone Setup</h3>
+                <pre><code class="language-bash"># Configure rclone for your cloud provider
+rclone config
+# Choose: n) New remote
+# Name: b2 (or s3, gcs, onedrive, etc.)
+# Follow provider-specific setup
+
+# Test
+rclone lsd b2:
+rclone mkdir b2:my-bucket/restic-repo</code></pre>
+
+                <h3>Initialize Restic Repository</h3>
+                <pre><code class="language-bash"># Local
+export RESTIC_REPOSITORY=/mnt/backup/restic-repo
+export RESTIC_PASSWORD="your-strong-password"
+restic init
+
+# Cloud (B2 example)
+export RESTIC_REPOSITORY=b2:my-bucket/restic-repo
+export B2_ACCOUNT_ID=your-account-id
+export B2_ACCOUNT_KEY=your-account-key
+export RESTIC_PASSWORD="your-strong-password"
+restic init</code></pre>
+
+                <h3>Backup Script</h3>
+                <pre><code class="language-bash">#!/bin/bash
+# /usr/local/bin/backup.sh
+
+set -euo pipefail
+
+export RESTIC_REPOSITORY=b2:my-bucket/restic-repo
+export B2_ACCOUNT_ID=xxx
+export B2_ACCOUNT_KEY=xxx
+export RESTIC_PASSWORD="your-strong-password"
+
+# Backup Docker volumes and configs
+restic backup \
+    /home/user/docker \
+    /var/lib/docker/volumes \
+    /etc/letsencrypt \
+    --exclude-file=/etc/restic/excludes.txt \
+    --tag "home-$(date +%Y%m%d)"
+
+# Prune old snapshots
+restic forget \
+    --keep-daily 7 \
+    --keep-weekly 4 \
+    --keep-monthly 6 \
+    --keep-yearly 2 \
+    --prune
+
+# Check repository integrity (monthly)
+if [ $(date +%d) -eq 01 ]; then
+    restic check --read-data-subset=10%
+fi</code></pre>
+
+                <h3>Exclude File</h3>
+                <pre><code class="language-text"># /etc/restic/excludes.txt
+*/cache/*
+*/tmp/*
+*/logs/*.log
+*.pyc
+__pycache__
+*.sock
+*.pid
+node_modules/
+.git/</code></pre>
+            </section>
+
+            <section id="docker-volumes">
+                <h2>Backing Up Docker Volumes</h2>
+
+                <h3>Method 1: Borg/Restic Direct (Recommended)</h3>
+                <p>Back up <code>/var/lib/docker/volumes</code> directly. Borg/Restic handles deduplication efficiently.</p>
+
+                <h3>Method 2: Container-Based Backup</h3>
+                <p>Use a dedicated backup container for consistent snapshots:</p>
+                <pre><code class="language-yaml">version: '3.8'
+
+services:
+  backup:
+    image: b3vis/borgmatic:latest
+    container_name: backup
+    restart: unless-stopped
+    volumes:
+      - /var/lib/docker/volumes:/volumes:ro
+      - /home/user/docker:/docker:ro
+      - /etc/letsencrypt:/letsencrypt:ro
+      - ./borgmatic-config.yaml:/etc/borgmatic/config.yaml:ro
+      - /mnt/backup:/mnt/backup
+      - /root/.ssh:/root/.ssh:ro
+    environment:
+      - BORG_PASSPHRASE=your-passphrase
+    # Run daily at 2 AM
+    deploy:
+      resources:
+        limits:
+          memory: 2G</code></pre>
+
+                <h3>Method 3: Per-Service Backup Containers</h3>
+                <p>For databases, use specialized backup sidecars:</p>
+                <pre><code class="language-yaml">services:
+  postgres:
+    image: postgres:16
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  postgres-backup:
+    image: prodrigestivill/postgres-backup-local:14
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data:ro
+      - /mnt/backup/postgres:/backups
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=yourdb
+      - POSTGRES_USER=youruser
+      - POSTGRES_PASSWORD=yourpass
+      - SCHEDULE=@daily
+      - KEEP_DAYS=30
+
+volumes:
+  postgres-data:</code></pre>
+            </section>
+
+            <section id="databases">
+                <h2>Database Backups</h2>
+                <p>Never rely solely on volume backups for databases. Use native dump tools for consistent, restorable backups.</p>
+
+                <h3>PostgreSQL</h3>
+                <pre><code class="language-bash"># Inside container or via docker exec
+pg_dump -U user -d dbname > backup.sql
+
+# Compressed
+pg_dump -U user -d dbname | gzip > backup.sql.gz
+
+# Restore
+gunzip -c backup.sql.gz | psql -U user -d dbname</code></pre>
+
+                <h3>MariaDB/MySQL</h3>
+                <pre><code class="language-bash"># Backup
+mysqldump -u user -p dbname | gzip > backup.sql.gz
+
+# All databases
+mysqldump -u root -p --all-databases | gzip > all-dbs.sql.gz
+
+# Restore
+gunzip -c backup.sql.gz | mysql -u user -p dbname</code></pre>
+
+                <h3>Redis</h3>
+                <pre><code class="language-bash"># Trigger BGSAVE
+redis-cli BGSAVE
+
+# Copy RDB file
+docker cp redis:/data/dump.rdb ./redis-backup-$(date +%Y%m%d).rdb</code></pre>
+
+                <h3>SQLite (Home Assistant, etc.)</h3>
+                <pre><code class="language-bash"># Use .backup command (safe for running DB)
+sqlite3 /config/home-assistant_v2.db ".backup /backup/ha-$(date +%Y%m%d).db"
+
+# Or use sqlite3 backup API via script</code></pre>
+            </section>
+
+            <section id="offsite">
+                <h2>Offsite Storage Options</h2>
+
+                <div class="storage-grid">
+                    <div class="storage-card">
+                        <h3>Backblaze B2</h3>
+                        <p class="price">$6/TB/month</p>
+                        <ul>
+                            <li>S3-compatible API</li>
+                            <li>Free 10GB, then $6/TB</li>
+                            <li>Free egress to Cloudflare, Fastly</li>
+                            <li>Native restic/rclone support</li>
+                        </ul>
+                    </div>
+                    <div class="storage-card">
+                        <h3>Cloudflare R2</h3>
+                        <p class="price">$0.015/GB/month</p>
+                        <ul>
+                            <li>Zero egress fees</li>
+                            <li>S3-compatible</li>
+                            <li>10GB free tier</li>
+                            <li>Great for restic/B2</li>
+                        </ul>
+                    </div>
+                    <div class="storage-card">
+                        <h3>Wasabi</h3>
+                        <p class="price">$6.99/TB/month</p>
+                        <ul>
+                            <li>No egress fees</li>
+                            <li>1TB minimum</li>
+                            <li>S3-compatible</li>
+                            <li>99.999999999% durability</li>
+                        </ul>
+                    </div>
+                    <div class="storage-card">
+                        <h3>AWS S3 / Glacier</h3>
+                        <p class="price">Varies</p>
+                        <ul>
+                            <li>S3 Standard: $0.023/GB</li>
+                            <li>Glacier Instant: $0.004/GB</li>
+                            <li>Glacier Deep Archive: $0.00099/GB</li>
+                            <li>Complex pricing, high egress</li>
+                        </ul>
+                    </div>
+                    <div class="storage-card">
+                        <h3>Hetzner Storage Box</h3>
+                        <p class="price">€3.49-15.90/month</p>
+                        <ul>
+                            <li>1TB - 10TB</li>
+                            <li>Samba, SFTP, WebDAV, Borg, Restic</li>
+                            <li>Located in Germany (GDPR)</li>
+                            <li>Excellent value for EU</li>
+                        </ul>
+                    </div>
+                    <div class="storage-card">
+                        <h3>Rsync.net</h3>
+                        <p class="price">$0.04/GB/month</p>
+                        <ul>
+                            <li>ZFS-backed, snapshots</li>
+                            <li>SSH/Borg/Rsync native</li>
+                            <li>No egress fees</li>
+                            <li>Privacy-focused, US-based</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Budget Option: Friend's House / Second Location</h3>
+                <pre><code class="language-bash"># Sync to remote server via rsync/SSH
+rsync -avz --delete /mnt/backup/ user@remote-server:/mnt/backup/
+
+# Or use rclone with SFTP
+rclone sync /mnt/backup/ sftp:remote:/backup/</code></pre>
+            </section>
+
+            <section id="testing">
+                <h2>Testing Your Restores</h2>
+                <p><strong>Untested backups are not backups.</strong> Schedule regular restore tests.</p>
+
+                <div class="testing-grid">
+                    <div class="test-card">
+                        <h3>Monthly: Single File Restore</h3>
+                        <pre><code class="language-bash"># Borg
+borgmatic extract --archive latest --path docker/docker-compose.yml --destination /tmp/test-restore
+
+# Restic
+restic restore latest --target /tmp/test-restore --include docker/docker-compose.yml</code></pre>
+                    </div>
+                    <div class="test-card">
+                        <h3>Quarterly: Full Service Restore</h3>
+                        <ol class="steps">
+                            <li>Spin up test server (VM, VPS, or spare hardware)</li>
+                            <li>Restore all Docker volumes and configs</li>
+                            <li>Deploy with docker compose</li>
+                            <li>Verify all services start and data is intact</li>
+                            <li>Document time taken and any issues</li>
+                        </ol>
+                    </div>
+                    <div class="test-card">
+                        <h3>Annually: Disaster Recovery Drill</h3>
+                        <ol class="steps">
+                            <li>Simulate total loss: wipe test server</li>
+                            <li>Reinstall OS, install Docker, restore everything</li>
+                            <li>Verify offsite backup accessibility</li>
+                            <li>Test with different hardware/cloud provider</li>
+                            <li>Update runbook with lessons learned</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <h3>Restore Commands Reference</h3>
+                <pre><code class="language-bash"># Borg - list archives
+borgmatic list --repository /mnt/backup/borg-repo
+
+# Borg - extract specific archive
+borgmatic extract --archive backup-2026-01-15T02:00:00 --destination /tmp/restore
+
+# Restic - list snapshots
+restic snapshots
+
+# Restic - restore latest
+restic restore latest --target /tmp/restore
+
+# Restic - mount for browsing
+restic mount /mnt/restic-mount
+# Browse files, copy what you need
+fusermount -u /mnt/restic-mount</code></pre>
+            </section>
+
+            <section id="automation">
+                <h2>Automation & Monitoring</h2>
+
+                <h3>Systemd Timers (Borgmatic)</h3>
+                <pre><code class="language-bash"># /etc/systemd/system/borgmatic-backup.service
+[Unit]
+Description=Borgmatic Backup
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/borgmatic --verbosity 1
+Environment=BORG_PASSPHRASE=your-passphrase
+
+# /etc/systemd/system/borgmatic-backup.timer
+[Unit]
+Description=Run Borgmatic daily
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+RandomizedDelaySec=1h
+
+[Install]
+WantedBy=timers.target</code></pre>
+
+                <h3>Cron (Restic)</h3>
+                <pre><code class="language-bash"># /etc/cron.d/restic-backup
+# Run daily at 2:30 AM
+30 2 * * * root /usr/local/bin/backup.sh >> /var/log/restic-backup.log 2>&1
+
+# Monthly check on 1st at 4 AM
+0 4 1 * * root restic check --read-data-subset=10% >> /var/log/restic-check.log 2>&1</code></pre>
+
+                <h3>Monitoring with Healthchecks.io</h3>
+                <pre><code class="language-bash"># Add to backup script
+curl -fsS --retry 3 https://hc-ping.com/your-uuid-here > /dev/null
+
+# On failure, also ping failure endpoint
+trap 'curl -fsS https://hc-ping.com/your-uuid-here/fail' ERR</code></pre>
+
+                <h3>Uptime Kuma Monitoring</h3>
+                <p>Add a <strong>Push</strong> monitor in Uptime Kuma for each backup job. Set expected interval (e.g., 25 hours for daily). If backup doesn't push, you get alerted.</p>
+
+                <h3>Backup Health Dashboard (Grafana)</h3>
+                <p>Export backup metrics to Prometheus/Grafana:</p>
+                <pre><code class="language-bash"># Borgmatic with Prometheus exporter
+borgmatic --verbosity 1 --json > /var/log/borgmatic.json
+
+# Parse with node_exporter textfile collector or custom script</code></pre>
+            </section>
+
+            <nav class="guide-navigation">
+                <a href="../index.html#guides" class="btn btn-secondary">← Back to Guides</a>
+                <a href="vpn.html" class="btn btn-primary">Next: Remote Access (VPN) →</a>
+            </nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <path d="M8 17h8M12 17v-5"/>
+                        </svg>
+                        <span>HomeLab Guide</span>
+                    </a>
+                    <p>Free, open-source guides for building your own home lab. No ads, no tracking, just knowledge.</p>
+                </div>
+                <nav class="footer-nav">
+                    <div class="footer-section">
+                        <h4>Guides</h4>
+                        <ul>
+                            <li><a href="basics.html">Home Lab Basics</a></li>
+                            <li><a href="docker.html">Docker Fundamentals</a></li>
+                            <li><a href="jellyfin.html">Jellyfin Server</a></li>
+                            <li><a href="reverse-proxy.html">Reverse Proxy & SSL</a></li>
+                            <li><a href="backup.html">Backup Strategy</a></li>
+                            <li><a href="vpn.html">Remote Access (VPN)</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="jellyfin.html">Jellyfin</a></li>
+                            <li><a href="nextcloud.html">Nextcloud</a></li>
+                            <li><a href="homeassistant.html">Home Assistant</a></li>
+                            <li><a href="portainer.html">Portainer</a></li>
+                            <li><a href="uptime-kuma.html">Uptime Kuma</a></li>
+                            <li><a href="authentik.html">Authentik</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Networking</h4>
+                        <ul>
+                            <li><a href="vlans.html">VLANs & Segmentation</a></li>
+                            <li><a href="dns.html">DNS & Local Domains</a></li>
+                            <li><a href="firewall.html">Firewall Rules</a></li>
+                            <li><a href="security.html">Security Hardening</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with ❤️ for the self-hosting community. <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a></p>
+                <p class="license">Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>

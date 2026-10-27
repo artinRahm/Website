@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Securely access your home lab from anywhere using Tailscale, WireGuard, or OpenVPN. Compare VPN options and set up remote access.">
+    <title>Remote Access (VPN) - HomeLab Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="../index.html" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 17h8M12 17v-5"/>
+                </svg>
+                <span>HomeLab Guide</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <ul class="nav-links">
+                <li><a href="../index.html#guides">Guides</a></li>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../index.html#hardware">Hardware</a></li>
+                <li><a href="../index.html#networking">Networking</a></li>
+                <li><a href="../index.html#resources">Resources</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="guide-page">
+        <article class="guide-content container">
+            <header class="guide-header">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="../index.html">Home</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <a href="../index.html#guides">Guides</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <span aria-current="page">Remote Access (VPN)</span>
+                </nav>
+                <h1>Remote Access (VPN)</h1>
+                <p class="guide-description">Securely access your home lab from anywhere using Tailscale, WireGuard, or OpenVPN. Compare options and set up zero-trust remote access.</p>
+                <div class="guide-meta">
+                    <span class="guide-difficulty beginner">Beginner</span>
+                    <span class="guide-time">~25 min read</span>
+                    <span class="guide-updated">Updated 2026</span>
+                </div>
+            </header>
+
+            
+
+            <section id="why-vpn">
+                <h2>Why Not Just Port Forward?</h2>
+
+                <div class="callout callout-error">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                    <div>
+                        <strong>Never expose services directly to the internet.</strong> Port forwarding exposes your services to the entire internet - bots, scanners, and attackers. Even with authentication, vulnerabilities in the service itself can be exploited.
+                    </div>
+                </div>
+
+                <h3>Risks of Port Forwarding</h3>
+                <ul class="feature-list">
+                    <li><strong>Constant scanning</strong> - Your IP is probed within minutes of being online</li>
+                    <li><strong>Zero-day exploits</strong> - Services like Jellyfin, Nextcloud, etc. have had RCE vulnerabilities</li>
+                    <li><strong>Brute force attacks</strong> - Automated login attempts 24/7</li>
+                    <li><strong>No encryption guarantee</strong> - Some services use HTTP internally</li>
+                    <li><strong>Single point of failure</strong> - One compromised service = full network access</li>
+                </ul>
+
+                <h3>Benefits of VPN Access</h3>
+                <ul class="feature-list">
+                    <li><strong>Zero trust</strong> - Services only accessible via authenticated, encrypted tunnel</li>
+                    <li><strong>No open ports</strong> - Router firewall stays closed</li>
+                    <li><strong>Encrypted traffic</strong> - All traffic encrypted end-to-end</li>
+                    <li><strong>Device authorization</strong> - Only approved devices can connect</li>
+                    <li><strong>Network segmentation</strong> - Access only what you need</li>
+                    <li><strong>Works behind CGNAT</strong> - No public IP required (Tailscale/WireGuard)</li>
+                </ul>
+            </section>
+
+            <section id="vpn-options">
+                <h2>VPN Options Comparison</h2>
+
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Tailscale</th>
+                                <th>WireGuard</th>
+                                <th>OpenVPN</th>
+                                <th>Headscale</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Setup Difficulty</td>
+                                <td>⭐ Easiest</td>
+                                <td>⭐⭐ Medium</td>
+                                <td>⭐⭐⭐ Hard</td>
+                                <td>⭐⭐ Medium</td>
+                            </tr>
+                            <tr>
+                                <td>Performance</td>
+                                <td>Excellent</td>
+                                <td>⭐⭐⭐ Best</td>
+                                <td>Good</td>
+                                <td>Excellent</td>
+                            </tr>
+                            <tr>
+                                <td>NAT Traversal</td>
+                                <td>✅ Automatic (DERP)</td>
+                                <td>✅ Manual/STUN</td>
+                                <td>✅ Usually works</td>
+                                <td>✅ Automatic (DERP)</td>
+                            </tr>
+                            <tr>
+                                <td>Central Management</td>
+                                <td>✅ Web UI</td>
+                                <td>❌ Config files</td>
+                                <td>✅ Web UI (optional)</td>
+                                <td>✅ Web UI</td>
+                            </tr>
+                            <tr>
+                                <td>Self-Hosted Control</td>
+                                <td>❌ Tailscale Inc.</td>
+                                <td>✅ Full control</td>
+                                <td>✅ Full control</td>
+                                <td>✅ Full control</td>
+                            </tr>
+                            <tr>
+                                <td>Mobile Apps</td>
+                                <td>✅ Excellent</td>
+                                <td>✅ Official apps</td>
+                                <td>✅ Official apps</td>
+                                <td>✅ Tailscale apps</td>
+                            </tr>
+                            <tr>
+                                <td>Exit Node / Gateway</td>
+                                <td>✅ Built-in</td>
+                                <td>✅ Manual config</td>
+                                <td>✅ Built-in</td>
+                                <td>✅ Built-in</td>
+                            </tr>
+                            <tr>
+                                <td>Cost (Personal)</td>
+                                <td>Free (100 devices)</td>
+                                <td>Free</td>
+                                <td>Free</td>
+                                <td>Free (self-hosted)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="recommendation-box">
+                    <h3>🏆 Recommendation</h3>
+                    <p><strong>Start with Tailscale</strong> - it's free for personal use (up to 100 devices), works behind any NAT, has excellent apps, and takes 5 minutes to set up. Migrate to Headscale later if you want full self-hosted control.</p>
+                </div>
+            </section>
+
+            <section id="tailscale">
+                <h2>Tailscale (Easiest - Recommended)</h2>
+
+                <h3>How It Works</h3>
+                <p>Tailscale creates a mesh WireGuard network between your devices. It uses a coordination server (run by Tailscale) for key exchange and NAT traversal, but all data flows directly peer-to-peer (or via DERP relays).</p>
+
+                <h3>Quick Start</h3>
+                <ol class="steps">
+                    <li>Create account at <a href="https://tailscale.com" target="_blank" rel="noopener">tailscale.com</a> (GitHub, Google, Microsoft, or email)</li>
+                    <li>Install on your server:
+                        <pre><code class="language-bash">curl -fsSL https://tailscale.com/install.sh | sh</code></pre>
+                    </li>
+                    <li>Authenticate:
+                        <pre><code class="language-bash">sudo tailscale up</code></pre>
+                    </li>
+                    <li>Install Tailscale app on your phone/laptop and sign in</li>
+                    <li>Done! Access services at <code>http://server-hostname:port</code> or <code>http://100.x.y.z:port</code></li>
+                </ol>
+
+                <h3>Subnet Router (Access All LAN Devices)</h3>
+                <p>Make your server a gateway to your entire home network:</p>
+                <pre><code class="language-bash"># Enable IP forwarding
+echo 'net.ipv4.ip_forward = 1' | sudo tee /etc/sysctl.d/99-tailscale.conf
+echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.d/99-tailscale.conf
+sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
+
+# Advertise your LAN subnet (e.g., 192.168.1.0/24)
+sudo tailscale up --advertise-routes=192.168.1.0/24
+
+# In Tailscale admin console: Machines → ... → Edit route settings → Approve routes</code></pre>
+
+                <h3>Exit Node (Route All Traffic Through Home)</h3>
+                <pre><code class="language-bash"># On server: enable exit node
+sudo tailscale up --advertise-exit-node
+
+# On client: use exit node
+tailscale up --exit-node=server-hostname
+# Or select in Tailscale app: "Route all traffic through server-hostname"</code></pre>
+
+                <h3>MagicDNS (Automatic Hostnames)</h3>
+                <p>Enable in admin console: <strong>DNS</strong> → <strong>MagicDNS</strong>. Access services via <code>http://jellyfin.your-tailnet.ts.net</code> or just <code>http://jellyfin</code>.</p>
+
+                <h3>ACL (Access Control)</h3>
+                <p>Restrict which devices can access which services in admin console → <strong>Access Controls</strong>:</p>
+                <pre><code class="language-json">{
+  "groups": {
+    "group:admin": ["user@github"],
+    "group:family": ["user2@github", "user3@google"]
+  },
+  "hosts": {
+    "jellyfin": "100.x.y.z:8096",
+    "nextcloud": "100.x.y.z:80"
+  },
+  "acls": [
+    {"action": "accept", "src": ["group:admin"], "dst": ["*:*"]},
+    {"action": "accept", "src": ["group:family"], "dst": ["jellyfin:8096", "nextcloud:80"]},
+    {"action": "deny", "src": ["group:family"], "dst": ["*:*"]}
+  ]
+}</code></pre>
+            </section>
+
+            <section id="wireguard">
+                <h2>WireGuard (High Performance)</h2>
+
+                <h3>Why WireGuard?</h3>
+                <ul class="feature-list">
+                    <li>Kernel-level (Linux 5.6+) - fastest performance</li>
+                    <td>Minimal codebase (~4000 lines) - auditable</li>
+                    <li>Modern cryptography (ChaCha20, Poly1305, Curve25519, BLAKE2s)</li>
+                    <li>No handshake latency - stateless</li>
+                    <li>Roaming support - IP changes don't break connection</li>
+                </ul>
+
+                <h3>Server Setup (Docker)</h3>
+                <pre><code class="language-yaml">version: '3.8'
+
+services:
+  wireguard:
+    image: lscr.io/linuxserver/wireguard:latest
+    container_name: wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - SERVERURL=auto  # Or yourdomain.com
+      - SERVERPORT=51820
+      - PEERS=phone,laptop,tablet  # Client names
+      - PEERDNS=1.1.1.1,1.0.0.1    # DNS for clients
+      - INTERNAL_SUBNET=10.13.13.0/24
+      - ALLOWEDIPS=0.0.0.0/0,::/0  # Full tunnel (or 10.13.13.0/24 for split)
+    volumes:
+      - ./config:/config
+      - /lib/modules:/lib/modules:ro
+    ports:
+      - "51820:51820/udp"
+    restart: unless-stopped
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1</code></pre>
+
+                <h3>Client Configuration</h3>
+                <p>After starting, QR codes and configs are in <code>./config/peer_*/</code>:</p>
+                <pre><code class="language-bash"># View QR code for phone
+cat ./config/peer_phone/peer_phone.png | qrencode -t ansiutf8
+
+# Or install qrencode and run:
+qrencode -t ansiutf8 < ./config/peer_phone/peer_phone.conf</code></pre>
+
+                <h3>Manual Config (No Docker)</h3>
+                <pre><code class="language-bash"># Install
+sudo apt install -y wireguard wireguard-tools
+
+# Generate keys
+wg genkey | tee server_private.key | wg pubkey > server_public.key
+wg genkey | tee client_private.key | wg pubkey > client_public.key
+
+# Server config: /etc/wireguard/wg0.conf
+[Interface]
+Address = 10.13.13.1/24
+PrivateKey = <server_private.key>
+ListenPort = 51820
+PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+[Peer]
+PublicKey = <client_public.key>
+AllowedIPs = 10.13.13.2/32
+
+# Client config
+[Interface]
+Address = 10.13.13.2/24
+PrivateKey = <client_private.key>
+DNS = 1.1.1.1
+
+[Peer]
+PublicKey = <server_public.key>
+Endpoint = yourdomain.com:51820
+AllowedIPs = 10.13.13.0/24, 192.168.1.0/24
+PersistentKeepalive = 25</code></pre>
+
+                <h3>Manage with WG-Easy (Web UI)</h3>
+                <pre><code class="language-yaml">version: '3.8'
+services:
+  wg-easy:
+    image: weejewel/wg-easy:latest
+    container_name: wg-easy
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - WG_HOST=yourdomain.com
+      - PASSWORD=your-admin-password
+      - WG_PORT=51820
+      - WG_DEFAULT_ADDRESS=10.13.13.x
+      - WG_DEFAULT_DNS=1.1.1.1
+    volumes:
+      - ./data:/etc/wireguard
+    ports:
+      - "51820:51820/udp"
+      - "51821:51821/tcp"  # Web UI
+    restart: unless-stopped</code></pre>
+            </section>
+
+            <section id="openvpn">
+                <h2>OpenVPN (Traditional)</h2>
+
+                <h3>When to Use OpenVPN</h3>
+                <ul class="feature-list">
+                    <li>Corporate/enterprise requirements</li>
+                    <li>Need TCP fallback (some networks block UDP)</li>
+                    <li>Legacy client support</li>
+                    <li>Compliance requirements</li>
+                </ul>
+
+                <h3>Docker Setup (OpenVPN-AS)</h3>
+                <pre><code class="language-yaml">version: '3.8'
+services:
+  openvpn-as:
+    image: linuxserver/openvpn-as:latest
+    container_name: openvpn-as
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - INTERFACE=eth0
+    volumes:
+      - ./config:/config
+    ports:
+      - "943:943/tcp"   # Admin UI
+      - "9443:9443/tcp" # Client web UI
+      - "1194:1194/udp" # OpenVPN
+    restart: unless-stopped</code></pre>
+
+                <h3>Access Admin UI</h3>
+                <p>Open <code>https://yourdomain.com:943/admin</code> (accept self-signed cert warning). Default user: <code>openvpn</code>, password from logs.</p>
+            </section>
+
+            <section id="headscale">
+                <h2>Headscale (Self-Hosted Tailscale)</h2>
+                <p><strong>Headscale</strong> is an open-source implementation of the Tailscale coordination server. Use Tailscale clients with your own control plane.</p>
+
+                <h3>Why Headscale?</h3>
+                <ul class="feature-list">
+                    <li>Full data sovereignty - no third-party coordination server</li>
+                    <li>Free unlimited devices (vs Tailscale's 100 device limit)</li>
+                    <li>Same great Tailscale clients</li>
+                    <li>Supports most Tailscale features</li>
+                </ul>
+
+                <h3>Docker Compose</h3>
+                <pre><code class="language-yaml">version: '3.8'
+
+services:
+  headscale:
+    image: headscale/headscale:latest
+    container_name: headscale
+    restart: unless-stopped
+    volumes:
+      - ./data:/var/lib/headscale
+      - ./config:/etc/headscale
+    ports:
+      - "8080:8080"
+    environment:
+      - HEADSCALE_SERVER_URL=https://headscale.yourdomain.com
+      - HEADSCALE_METRICS_LISTEN_ADDR=0.0.0.0:9090
+      - HEADSCALE_GRPC_LISTEN_ADDR=0.0.0.0:50443
+      - HEADSCALE_GRPC_ALLOW_INSECURE=false
+
+  headscale-ui:
+    image: ghcr.io/gurucomputing/headscale-ui:latest
+    container_name: headscale-ui
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      - HEADSCALE_URL=https://headscale.yourdomain.com
+
+  derp:
+    image: fredliang/derper:latest
+    container_name: derp
+    restart: unless-stopped
+    ports:
+      - "3478:3478/udp"  # STUN
+      - "443:443"        # DERP HTTPS
+    environment:
+      - DERP_SERVER_ADDR=:443
+      - DERP_STUN_ADDR=:3478
+      - DERP_VERIFY_CLIENTS=true</code></pre>
+
+                <h3>Configuration (config.yaml)</h3>
+                <pre><code class="language-yaml"># config/config.yaml
+server_url: https://headscale.yourdomain.com
+listen_addr: 0.0.0.0:8080
+metrics_listen_addr: 0.0.0.0:9090
+grpc_listen_addr: 0.0.0.0:50443
+grpc_allow_insecure: false
+
+db_type: sqlite3
+db_path: /var/lib/headscale/db.sqlite3
+
+derp:
+  urls:
+    - https://derp.yourdomain.com
+  paths:
+    - /derp
+  auto_update_enabled: true
+  update_frequency: 24h
+
+acl_policy_path: "/etc/headscale/policy.hujson"
+log_level: info
+
+tls_letsencrypt_hostname: headscale.yourdomain.com
+tls_letsencrypt_listen: ":443"
+tls_letsencrypt_cache_dir: "/var/lib/headscale/cache"
+
+policy:
+  mode: file</code></pre>
+
+                <h3>Client Setup</h3>
+                <pre><code class="language-bash"># On client devices, use Tailscale CLI with custom login server
+tailscale up --login-server=https://headscale.yourdomain.com
+
+# Or set via environment
+export TS_LOGIN_SERVER=https://headscale.yourdomain.com
+tailscale up
+
+# For GUI apps, enter login server in settings</code></pre>
+            </section>
+
+            <section id="split-tunneling">
+                <h2>Split Tunneling & DNS</h2>
+
+                <h3>Split Tunnel (Only Home Lab Traffic)</h3>
+                <p>Route only home lab traffic through VPN, rest goes direct:</p>
+                <pre><code class="language-bash"># Tailscale
+tailscale up --advertise-routes=192.168.1.0/24 --accept-routes=false
+
+# WireGuard client config
+AllowedIPs = 10.13.13.0/24, 192.168.1.0/24  # Only VPN + LAN
+
+# OpenVPN client config
+pull-filter ignore redirect-gateway
+route 192.168.1.0 255.255.255.0</code></pre>
+
+                <h3>Full Tunnel (All Traffic Through Home)</h3>
+                <p>Use your home internet connection for everything:</p>
+                <pre><code class="language-bash"># Tailscale
+tailscale up --exit-node=server-hostname
+
+# WireGuard client config
+AllowedIPs = 0.0.0.0/0, ::/0
+
+# OpenVPN client config (default)
+# redirect-gateway def1</code></pre>
+
+                <h3>MagicDNS / Local DNS</h3>
+                <pre><code class="language-bash"># Tailscale MagicDNS - automatic
+# Enable in admin console → DNS → MagicDNS
+
+# Manual DNS with WireGuard/OpenVPN
+# Run AdGuard Home or Pi-hole on VPN IP
+# Push DNS to clients:
+# WireGuard: PEERDNS=10.13.13.1
+# OpenVPN: push "dhcp-option DNS 10.13.13.1"</code></pre>
+            </section>
+
+            <section id="mobile">
+                <h2>Mobile & Device Setup</h2>
+
+                <h3>iOS / iPadOS</h3>
+                <ul class="feature-list">
+                    <li><strong>Tailscale:</strong> App Store → Tailscale → Sign in</li>
+                    <li><strong>WireGuard:</strong> App Store → WireGuard → Scan QR / Import config</li>
+                    <li><strong>OpenVPN:</strong> App Store → OpenVPN Connect → Import .ovpn</li>
+                </ul>
+
+                <h3>Android</h3>
+                <ul class="feature-list">
+                    <li><strong>Tailscale:</strong> Play Store / F-Droid → Tailscale</li>
+                    <li><strong>WireGuard:</strong> Play Store / F-Droid → WireGuard</li>
+                    <li><strong>OpenVPN:</strong> Play Store / F-Droid → OpenVPN for Android</li>
+                </ul>
+
+                <h3>Always-On VPN (Android)</h3>
+                <p>Settings → Network & Internet → VPN → Gear icon → "Always-on VPN" + "Block connections without VPN"</p>
+
+                <h3>macOS / Windows / Linux</h3>
+                <ul class="feature-list">
+                    <li><strong>Tailscale:</strong> Download from tailscale.com/download</li>
+                    <li><strong>WireGuard:</strong> Official clients or WireGuard tools</li>
+                    <li><strong>OpenVPN:</strong> OpenVPN Connect, Tunnelblick (macOS), NetworkManager (Linux)</li>
+                </ul>
+
+                <h3>Router-Level VPN (All Devices)</h3>
+                <p>Run VPN client on router for devices that can't run VPN apps (Smart TV, IoT, consoles):</p>
+                <ul class="feature-list">
+                    <li><strong>OpenWrt:</strong> WireGuard/OpenVPN packages</li>
+                    <li><strong>GL.iNet routers:</strong> Built-in WireGuard/OpenVPN/Tailscale</li>
+                    <li><strong>ASUS/Merlin:</strong> Built-in OpenVPN/WireGuard client</li>
+                    <li><strong>Ubiquiti:</strong> WireGuard via CLI/config.gateway.json</li>
+                </ul>
+            </section>
+
+            <nav class="guide-navigation">
+                <a href="../index.html#guides" class="btn btn-secondary">← Back to Guides</a>
+                <a href="jellyfin.html" class="btn btn-primary">View All Guides →</a>
+            </nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <path d="M8 17h8M12 17v-5"/>
+                        </svg>
+                        <span>HomeLab Guide</span>
+                    </a>
+                    <p>Free, open-source guides for building your own home lab. No ads, no tracking, just knowledge.</p>
+                </div>
+                <nav class="footer-nav">
+                    <div class="footer-section">
+                        <h4>Guides</h4>
+                        <ul>
+                            <li><a href="basics.html">Home Lab Basics</a></li>
+                            <li><a href="docker.html">Docker Fundamentals</a></li>
+                            <li><a href="jellyfin.html">Jellyfin Server</a></li>
+                            <li><a href="reverse-proxy.html">Reverse Proxy & SSL</a></li>
+                            <li><a href="backup.html">Backup Strategy</a></li>
+                            <li><a href="vpn.html">Remote Access (VPN)</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="jellyfin.html">Jellyfin</a></li>
+                            <li><a href="nextcloud.html">Nextcloud</a></li>
+                            <li><a href="homeassistant.html">Home Assistant</a></li>
+                            <li><a href="portainer.html">Portainer</a></li>
+                            <li><a href="uptime-kuma.html">Uptime Kuma</a></li>
+                            <li><a href="authentik.html">Authentik</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Networking</h4>
+                        <ul>
+                            <li><a href="vlans.html">VLANs & Segmentation</a></li>
+                            <li><a href="dns.html">DNS & Local Domains</a></li>
+                            <li><a href="firewall.html">Firewall Rules</a></li>
+                            <li><a href="security.html">Security Hardening</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with ❤️ for the self-hosting community. <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a></p>
+                <p class="license">Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>

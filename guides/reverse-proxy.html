@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Set up Nginx Proxy Manager with automatic Let's Encrypt SSL certificates. Secure all your home lab services with HTTPS.">
+    <title>Reverse Proxy & SSL - HomeLab Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="../index.html" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 17h8M12 17v-5"/>
+                </svg>
+                <span>HomeLab Guide</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <ul class="nav-links">
+                <li><a href="../index.html#guides">Guides</a></li>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../index.html#hardware">Hardware</a></li>
+                <li><a href="../index.html#networking">Networking</a></li>
+                <li><a href="../index.html#resources">Resources</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="guide-page">
+        <article class="guide-content container">
+            <header class="guide-header">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="../index.html">Home</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <a href="../index.html#guides">Guides</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <span aria-current="page">Reverse Proxy & SSL</span>
+                </nav>
+                <h1>Reverse Proxy & SSL</h1>
+                <p class="guide-description">Set up Nginx Proxy Manager with automatic Let's Encrypt SSL certificates. Single entry point, automatic HTTPS, and easy service management for your entire home lab.</p>
+                <div class="guide-meta">
+                    <span class="guide-difficulty beginner">Beginner</span>
+                    <span class="guide-time">~20 min read</span>
+                    <span class="guide-updated">Updated 2026</span>
+                </div>
+            </header>
+
+            
+            <section id="why-reverse-proxy">
+                <h2>Why Use a Reverse Proxy?</h2>
+                <p>A <strong>reverse proxy</strong> sits between the internet and your services, forwarding requests to the appropriate backend. For home labs, it's essential.</p>
+
+                <div class="reasons-grid">
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <h3>Single Port Exposure</h3>
+                        <p>Only open ports 80 & 443 on your router. All services accessible via subdomains (jellyfin.yourdomain.com) or paths (yourdomain.com/jellyfin).</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </div>
+                        <h3>Automatic HTTPS</h3>
+                        <p>Let's Encrypt integration provides free, valid SSL certificates with auto-renewal. No more browser warnings or manual cert management.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                        </div>
+                        <h3>Service Discovery</h3>
+                        <p>Easy to add new services. Just add a proxy host entry - no port forwarding changes needed.</p>
+                    </div>
+                    <div class="reason-card">
+                        <div class="reason-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                        </div>
+                        <h3>Security Features</h3>
+                        <p>Rate limiting, IP blocking, basic auth, header manipulation, WebSocket support - all configurable via UI.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="options">
+                <h2>Reverse Proxy Options</h2>
+
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Solution</th>
+                                <th>UI</th>
+                                <th>Auto SSL</th>
+                                <th>Learning Curve</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Nginx Proxy Manager</strong></td>
+                                <td>✅ Beautiful Web UI</td>
+                                <td>✅ Built-in Let's Encrypt</td>
+                                <td>Low</td>
+                                <td>Most home labs - recommended</td>
+                            </tr>
+                            <tr>
+                                <td>Traefik</td>
+                                <td>✅ Dashboard</td>
+                                <td>✅ Built-in</td>
+                                <td>Medium</td>
+                                <td>Docker Swarm/Kubernetes, dynamic configs</td>
+                            </tr>
+                            <tr>
+                                <td>Caddy</td>
+                                <td>❌ Config file only</td>
+                                <td>✅ Automatic by default</td>
+                                <td>Low</td>
+                                <td>Simple setups, config-as-code</td>
+                            </tr>
+                            <tr>
+                                <td>HAProxy</td>
+                                <td>❌ Stats page only</td>
+                                <td>❌ Manual</td>
+                                <td>High</td>
+                                <td>High performance, enterprise</td>
+                            </tr>
+                            <tr>
+                                <td>Manual Nginx</td>
+                                <td>❌ Config files</td>
+                                <td>❌ Manual certbot</td>
+                                <td>High</td>
+                                <td>Full control, learning Nginx</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout callout-info">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    <div>
+                        <strong>Recommendation:</strong> Start with <strong>Nginx Proxy Manager (NPM)</strong>. It has the best balance of features, ease of use, and community support for home labs.
+                    </div>
+                </div>
+            </section>
+
+            <section id="npm-setup">
+                <h2>Nginx Proxy Manager Setup</h2>
+
+                <h3>Prerequisites</h3>
+                <ul class="feature-list">
+                    <li>A domain name (or free subdomain from DuckDNS, No-IP, etc.)</li>
+                    <li>Ports 80 and 443 forwarded on your router to your server</li>
+                    <li>Docker and Docker Compose installed</li>
+                </ul>
+
+                <h3>Docker Compose</h3>
+                <pre><code class="language-yaml">version: '3.8'
+
+services:
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - '80:80'      # HTTP for Let's Encrypt validation
+      - '443:443'    # HTTPS
+      - '81:81'      # Admin UI
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    networks:
+      - homelab
+
+networks:
+  homelab:
+    driver: bridge
+    external: true</code></pre>
+
+                <h3>Deploy</h3>
+                <pre><code class="language-bash"># Create directory and compose file
+mkdir -p ~/npm && cd ~/npm
+# Save the above as docker-compose.yml
+
+# Start
+docker compose up -d
+
+# Verify
+docker compose logs -f npm</code></pre>
+
+                <h3>Initial Configuration</h3>
+                <ol class="steps">
+                    <li>Open <code>http://your-server-ip:81</code> in browser</li>
+                    <li>Default login: <code>admin@example.com</code> / <code>changeme</code></li>
+                    <li>Immediately change email and password on first login</li>
+                    <li>Go to <strong>Settings</strong> → <strong>Users</strong> to add more admins if needed</li>
+                </ol>
+            </section>
+
+            <section id="ssl-setup">
+                <h2>Automatic SSL with Let's Encrypt</h2>
+
+                <h3>How It Works</h3>
+                <p>Let's Encrypt validates domain ownership via <strong>HTTP-01 challenge</strong> (port 80) or <strong>DNS-01 challenge</strong> (DNS TXT record). NPM handles this automatically.</p>
+
+                <h3>HTTP-01 Challenge (Standard)</h3>
+                <p>Requires port 80 open to the internet. Easiest setup.</p>
+                <ol class="steps">
+                    <li>In NPM, go to <strong>SSL Certificates</strong> → <strong>Add SSL Certificate</strong> → <strong>Let's Encrypt</strong></li>
+                    <li>Enter your domain(s): <code>yourdomain.com</code>, <code>*.yourdomain.com</code> (wildcard)</li>
+                    <li>Enable <strong>Use DNS Challenge</strong> only if using DNS-01</li>
+                    <li>Enter your email for expiration notices</li>
+                    <li>Agree to Let's Encrypt ToS</li>
+                    <li>Click <strong>Save</strong> - NPM handles validation and issuance</li>
+                </ol>
+
+                <h3>DNS-01 Challenge (For Wildcards / No Port 80)</h3>
+                <p>Required for wildcard certificates (<code>*.yourdomain.com</code>) or if port 80 is blocked.</p>
+                <ol class="steps">
+                    <li>Get API credentials from your DNS provider (Cloudflare, GoDaddy, Namecheap, etc.)</li>
+                    <li>In NPM: <strong>SSL Certificates</strong> → <strong>Add SSL Certificate</strong> → <strong>Let's Encrypt</strong></li>
+                    <li>Enable <strong>Use DNS Challenge</strong></li>
+                    <li>Select your DNS provider</li>
+                    <li>Enter API credentials</li>
+                    <li>Save - NPM creates TXT records automatically</li>
+                </ol>
+
+                <div class="callout callout-tip">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <div>
+                        <strong>Cloudflare setup:</strong> Create API token with "Zone > DNS > Edit" permissions. Use "Global API Key" if token doesn't work. Never commit credentials to git!
+                    </div>
+                </div>
+
+                <h3>Force HTTPS & HSTS</h3>
+                <p>In NPM proxy host settings:</p>
+                <ul class="feature-list">
+                    <li><strong>Force SSL</strong> - Redirects HTTP to HTTPS</li>
+                    <li><strong>HSTS Enabled</strong> - Tells browsers to always use HTTPS (include subdomains)</li>
+                    <li><strong>HSTS Subdomains</strong> - Apply to all subdomains</li>
+                </ul>
+            </section>
+
+            <section id="adding-services">
+                <h2>Adding Your Services</h2>
+
+                <h3>Subdomain vs Path Routing</h3>
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Example</th>
+                                <th>Pros</th>
+                                <th>Cons</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Subdomain</strong></td>
+                                <td>jellyfin.yourdomain.com</td>
+                                <td>Clean URLs, better isolation, cookie separation</td>
+                                <td>Requires wildcard cert or multiple certs</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Path</strong></td>
+                                <td>yourdomain.com/jellyfin</td>
+                                <td>Single cert, works with any domain</td>
+                                <td>Cookie conflicts, some apps break</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout callout-tip">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <div>
+                        <strong>Use subdomains.</strong> They're cleaner, more secure (cookie isolation), and work better with modern web apps. Get a wildcard cert with DNS challenge.
+                    </div>
+                </div>
+
+                <h3>Adding a Proxy Host (Subdomain)</h3>
+                <ol class="steps">
+                    <li>In NPM: <strong>Proxy Hosts</strong> → <strong>Add Proxy Host</strong></li>
+                    <li><strong>Domain Names:</strong> <code>jellyfin.yourdomain.com</code></li>
+                    <li><strong>Scheme:</strong> <code>http</code> (usually - backend talks HTTP)</li>
+                    <li><strong>Forward Hostname/IP:</strong> <code>jellyfin</code> (container name) or <code>172.20.0.5</code> (container IP)</li>
+                    <li><strong>Forward Port:</strong> <code>8096</code> (Jellyfin's internal port)</li>
+                    <li><strong>Block Common Exploits:</strong> ✅ On</li>
+                    <li><strong>Websockets Support:</strong> ✅ On (required for Jellyfin, Home Assistant, etc.)</li>
+                    <li><strong>Access List:</strong> Optional - restrict by IP or add auth</li>
+                    <li><strong>SSL</strong> tab: Select your Let's Encrypt certificate</li>
+                    <li>Enable <strong>Force SSL</strong>, <strong>HSTS Enabled</strong>, <strong>HSTS Subdomains</strong></li>
+                    <li>Save</li>
+                </ol>
+
+                <h3>Common Service Configurations</h3>
+
+                <div class="service-config-grid">
+                    <div class="config-card">
+                        <h4>Jellyfin</h4>
+                        <pre><code>Forward Host: jellyfin
+Forward Port: 8096
+Websockets: ✅ On
+Custom locations: (usually none needed)</code></pre>
+                    </div>
+                    <div class="config-card">
+                        <h4>Nextcloud</h4>
+                        <pre><code>Forward Host: nextcloud
+Forward Port: 80
+Websockets: ✅ On
+Custom: proxy_set_header X-Forwarded-Proto https;</code></pre>
+                    </div>
+                    <div class="config-card">
+                        <h4>Home Assistant</h4>
+                        <pre><code>Forward Host: homeassistant
+Forward Port: 8123
+Websockets: ✅ On (critical!)
+Add: proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";</code></pre>
+                    </div>
+                    <div class="config-card">
+                        <h4>Portainer</h4>
+                        <pre><code>Forward Host: portainer
+Forward Port: 9000
+Websockets: ✅ On
+SSL: Use your Let's Encrypt cert</code></pre>
+                    </div>
+                </div>
+
+                <h3>Custom Nginx Configuration (Advanced)</h3>
+                <p>In proxy host → <strong>Advanced</strong> tab, add custom config:</p>
+                <pre><code class="language-nginx"># Increase upload size for Nextcloud
+client_max_body_size 10G;
+
+# WebSocket support
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";
+proxy_read_timeout 86400;
+
+# Security headers
+add_header X-Frame-Options "SAMEORIGIN";
+add_header X-Content-Type-Options "nosniff";
+add_header Referrer-Policy "strict-origin-when-cross-origin";
+
+# Cache static assets
+location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+}</code></pre>
+            </section>
+
+            <section id="advanced">
+                <h2>Advanced Configuration</h2>
+
+                <h3>Access Lists (Authentication)</h3>
+                <p>Add basic auth or IP restrictions to sensitive services:</p>
+                <ol class="steps">
+                    <li>NPM: <strong>Access Lists</strong> → <strong>Add Access List</strong></li>
+                    <li>Name it (e.g., "Admin Only")</li>
+                    <li><strong>Type:</strong> HTTP Basic Auth</li>
+                    <li>Add users with <code>htpasswd</code> generated passwords</li>
+                    <li>Or <strong>Type:</strong> IP Allow List for IP restrictions</li>
+                    <li>Apply to proxy host → <strong>Access List</strong> dropdown</li>
+                </ol>
+
+                <pre><code class="language-bash"># Generate htpasswd entry
+docker run --rm httpd:alpine htpasswd -nbB admin 'your-password'
+# Output: admin:$2y$05$abcdef...
+# Use the full hash in NPM</code></pre>
+
+                <h3>Redirection Hosts</h3>
+                <p>Redirect old domains or www to non-www:</p>
+                <ol class="steps">
+                    <li><strong>Redirection Hosts</strong> → <strong>Add Redirection Host</strong></li>
+                    <li>Domain: <code>www.yourdomain.com</code></li>
+                    <li>Forward to: <code>https://yourdomain.com</code></li>
+                    <li>Enable <strong>Preserve Path</strong></li>
+                    <li>Select SSL certificate</li>
+                </ol>
+
+                <h3>Stream (TCP/UDP) Proxies</h3>
+                <p>For non-HTTP services (game servers, databases, etc.):</p>
+                <ol class="steps">
+                    <li><strong>Stream</strong> → <strong>Add Stream</strong></li>
+                    <li>Incoming port: <code>25565</code> (Minecraft)</li>
+                    <li>Forward to: <code>minecraft-server:25565</code></li>
+                    <li>TCP/UDP as needed</li>
+                </ol>
+
+                <h3>Multiple NPM Instances (HA)</h3>
+                <p>For high availability, run 2+ NPM instances with shared <code>/data</code> and <code>/etc/letsencrypt</code> volumes (use NFS or replicated storage). Put behind a load balancer.</p>
+            </section>
+
+            <section id="troubleshooting">
+                <h2>Troubleshooting</h2>
+
+                <div class="troubleshooting-grid">
+                    <div class="issue-card">
+                        <h4>502 Bad Gateway</h4>
+                        <p>NPM can't reach backend service</p>
+                        <pre><code class="language-bash"># Check container is running
+docker ps | grep jellyfin
+
+# Check network connectivity
+docker exec nginx-proxy-manager ping jellyfin
+
+# Verify port
+docker exec nginx-proxy-manager wget -qO- http://jellyfin:8096</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>SSL Certificate Fails</h4>
+                        <p>Let's Encrypt validation fails</p>
+                        <pre><code class="language-bash"># Check port 80 accessibility
+curl -I http://yourdomain.com
+
+# Check DNS resolves correctly
+dig yourdomain.com
+
+# Check NPM logs
+docker logs nginx-proxy-manager | grep -i acme</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>WebSocket Not Working</h4>
+                        <p>Home Assistant, Jellyfin live TV, etc. fail</p>
+                        <pre><code class="language-nginx"># In Advanced tab, ensure:
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";
+proxy_read_timeout 86400;
+# And in proxy host: Websockets Support = ON</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Too Many Redirects</h4>
+                        <p>HTTPS redirect loop</p>
+                        <pre><code class="language-nginx"># Check service isn't also forcing HTTPS
+# In NPM: Force SSL = ON
+# In service config: Disable HTTPS redirect
+# Ensure X-Forwarded-Proto header passed</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Large File Uploads Fail</h4>
+                        <p>Nextcloud, file uploads timeout</p>
+                        <pre><code class="language-nginx"># In Advanced tab:
+client_max_body_size 10G;
+proxy_request_buffering off;</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Certificate Not Renewing</h4>
+                        <p>Let's Encrypt cert expired</p>
+                        <pre><code class="language-bash"># Check cron in container
+docker exec nginx-proxy-manager crontab -l
+
+# Force renewal
+docker exec nginx-proxy-manager /usr/bin/certbot renew --force-renewal
+
+# Check logs
+docker logs nginx-proxy-manager | grep -i renew</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="guide-navigation">
+                <a href="../index.html#guides" class="btn btn-secondary">← Back to Guides</a>
+                <a href="backup.html" class="btn btn-primary">Next: Backup Strategy →</a>
+            </nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <path d="M8 17h8M12 17v-5"/>
+                        </svg>
+                        <span>HomeLab Guide</span>
+                    </a>
+                    <p>Free, open-source guides for building your own home lab. No ads, no tracking, just knowledge.</p>
+                </div>
+                <nav class="footer-nav">
+                    <div class="footer-section">
+                        <h4>Guides</h4>
+                        <ul>
+                            <li><a href="basics.html">Home Lab Basics</a></li>
+                            <li><a href="docker.html">Docker Fundamentals</a></li>
+                            <li><a href="jellyfin.html">Jellyfin Server</a></li>
+                            <li><a href="reverse-proxy.html">Reverse Proxy & SSL</a></li>
+                            <li><a href="backup.html">Backup Strategy</a></li>
+                            <li><a href="vpn.html">Remote Access (VPN)</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="jellyfin.html">Jellyfin</a></li>
+                            <li><a href="nextcloud.html">Nextcloud</a></li>
+                            <li><a href="homeassistant.html">Home Assistant</a></li>
+                            <li><a href="portainer.html">Portainer</a></li>
+                            <li><a href="uptime-kuma.html">Uptime Kuma</a></li>
+                            <li><a href="authentik.html">Authentik</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Networking</h4>
+                        <ul>
+                            <li><a href="vlans.html">VLANs & Segmentation</a></li>
+                            <li><a href="dns.html">DNS & Local Domains</a></li>
+                            <li><a href="firewall.html">Firewall Rules</a></li>
+                            <li><a href="security.html">Security Hardening</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with ❤️ for the self-hosting community. <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a></p>
+                <p class="license">Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>

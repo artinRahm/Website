@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn Docker fundamentals - containers, images, volumes, networks, and Docker Compose. Essential knowledge for running self-hosted services.">
+    <title>Docker Fundamentals - HomeLab Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="../index.html" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 17h8M12 17v-5"/>
+                </svg>
+                <span>HomeLab Guide</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <ul class="nav-links">
+                <li><a href="../index.html#guides">Guides</a></li>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../index.html#hardware">Hardware</a></li>
+                <li><a href="../index.html#networking">Networking</a></li>
+                <li><a href="../index.html#resources">Resources</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="guide-page">
+        <article class="guide-content container">
+            <header class="guide-header">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="../index.html">Home</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <a href="../index.html#guides">Guides</a>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    <span aria-current="page">Docker Fundamentals</span>
+                </nav>
+                <h1>Docker Fundamentals</h1>
+                <p class="guide-description">Master the core concepts of Docker - containers, images, volumes, networks, and Docker Compose. The foundation for running all your self-hosted services.</p>
+                <div class="guide-meta">
+                    <span class="guide-difficulty beginner">Beginner</span>
+                    <span class="guide-time">~25 min read</span>
+                    <span class="guide-updated">Updated 2026</span>
+                </div>
+            </header>
+
+            
+
+            <section id="what-is-docker">
+                <h2>What is Docker?</h2>
+                <p><strong>Docker</strong> is a platform that packages applications and their dependencies into standardized units called <strong>containers</strong>. Unlike virtual machines, containers share the host OS kernel, making them lightweight, fast to start, and portable across environments.</p>
+
+                <div class="callout callout-info">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    <div>
+                        <strong>Why Docker for home labs?</strong> Every service (Jellyfin, Nextcloud, Home Assistant) runs in its own isolated container with its own dependencies. No dependency conflicts, easy updates, and simple backups.
+                    </div>
+                </div>
+
+                <h3>VMs vs Containers</h3>
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aspect</th>
+                                <th>Virtual Machines</th>
+                                <th>Containers</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Isolation</td>
+                                <td>Hardware-level (full OS)</td>
+                                <td>Process-level (shared kernel)</td>
+                            </tr>
+                            <tr>
+                                <td>Startup time</td>
+                                <td>Minutes</td>
+                                <td>Seconds</td>
+                            </tr>
+                            <tr>
+                                <td>Resource overhead</td>
+                                <td>High (GBs RAM)</td>
+                                <td>Low (MBs RAM)</td>
+                            </tr>
+                            <tr>
+                                <td>Portability</td>
+                                <td>Limited</td>
+                                <td>High (run anywhere)</td>
+                            </tr>
+                            <tr>
+                                <td>Density</td>
+                                <td>Few per host</td>
+                                <td>Dozens per host</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="core-concepts">
+                <h2>Core Concepts</h2>
+                <p>Understanding these four concepts is essential for working with Docker effectively:</p>
+
+                <div class="concept-grid">
+                    <div class="concept-card">
+                        <div class="concept-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 17h8M12 17v-5"/></svg>
+                        </div>
+                        <h3>Images</h3>
+                        <p>Read-only templates containing application code, libraries, dependencies, and runtime. Built from a Dockerfile. Identified by <code>name:tag</code> (e.g., <code>jellyfin/jellyfin:10.10.7</code>).</p>
+                    </div>
+                    <div class="concept-card">
+                        <div class="concept-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <h3>Containers</h3>
+                        <p>Running instances of images. Each container has its own filesystem, networking, and process space. Ephemeral by default - changes are lost on removal unless using volumes.</p>
+                    </div>
+                    <div class="concept-card">
+                        <div class="concept-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                        </div>
+                        <h3>Volumes</h3>
+                        <p>Persistent storage managed by Docker. Survive container recreation. Preferred over bind mounts for portability. Can be named or anonymous.</p>
+                    </div>
+                    <div class="concept-card">
+                        <div class="concept-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="1" width="22" height="22" rx="2"/><line x1="1" y1="12" x2="23" y2="12"/><line x1="12" y1="1" x2="12" y2="23"/></svg>
+                        </div>
+                        <h3>Networks</h3>
+                        <p>Enable communication between containers. Bridge (default), host, overlay, and macvlan drivers. Containers on same network reach each other by service name.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="images-containers">
+                <h2>Images vs Containers</h2>
+
+                <h3>Image Layers</h3>
+                <p>Docker images are built in <strong>layers</strong>. Each instruction in a Dockerfile creates a layer. Layers are cached and shared between images, making builds fast and storage efficient.</p>
+
+                <pre><code class="language-bash"># View image layers
+docker history jellyfin/jellyfin:10.10.7
+
+# Inspect image details
+docker inspect jellyfin/jellyfin:10.10.7</code></pre>
+
+                <h3>Container Lifecycle</h3>
+                <pre><code class="language-bash"># Create container (not started)
+docker create --name my-jellyfin jellyfin/jellyfin:10.10.7
+
+# Start container
+docker start my-jellyfin
+
+# Run = create + start (most common)
+docker run -d --name my-jellyfin jellyfin/jellyfin:10.10.7
+
+# Stop container (SIGTERM, then SIGKILL after 10s)
+docker stop my-jellyfin
+
+# Restart
+docker restart my-jellyfin
+
+# Remove (must be stopped first)
+docker rm my-jellyfin
+
+# Force remove running container
+docker rm -f my-jellyfin</code></pre>
+
+                <h3>Naming & Tagging</h3>
+                <div class="callout callout-warning">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <div>
+                        <strong>Never use <code>:latest</code> in production.</strong> It's a mutable tag that changes. Always pin specific versions: <code>jellyfin/jellyfin:10.10.7</code>. This prevents surprise breaking changes during updates.
+                    </div>
+                </div>
+            </section>
+
+            <section id="dockerfile">
+                <h2>Building Images with Dockerfile</h2>
+                <p>A <strong>Dockerfile</strong> is a text file with instructions to build a custom image. Most home lab users won't write Dockerfiles (using upstream images), but understanding them helps with debugging.</p>
+
+                <h3>Common Instructions</h3>
+                <pre><code class="language-dockerfile"># Base image
+FROM ubuntu:24.04
+
+# Metadata
+LABEL maintainer="you@example.com"
+LABEL description="Custom Jellyfin with hardware transcoding"
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    intel-media-va-driver-non-free \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user
+RUN useradd -m -u 1000 jellyfin
+USER jellyfin
+
+# Set working directory
+WORKDIR /app
+
+# Copy files
+COPY --chown=jellyfin:jellyfin . .
+
+# Expose port (documentation only)
+EXPOSE 8096
+
+# Default command
+CMD ["jellyfin"]</code></pre>
+
+                <h3>Build & Tag</h3>
+                <pre><code class="language-bash"># Build with tag
+docker build -t my-jellyfin:10.10.7 .
+
+# Build with build args
+docker build --build-arg JELLYFIN_VERSION=10.10.7 -t my-jellyfin:10.10.7 .
+
+# Multi-platform build (for ARM + x86)
+docker buildx build --platform linux/amd64,linux/arm64 -t my-jellyfin:10.10.7 --push .</code></pre>
+            </section>
+
+            <section id="volumes">
+                <h2>Persistent Data with Volumes</h2>
+                <p>Containers are ephemeral. When you remove a container, its writable layer is deleted. <strong>Volumes</strong> provide persistent storage managed by Docker.</p>
+
+                <h3>Named Volumes (Recommended)</h3>
+                <pre><code class="language-bash"># Create volume
+docker volume create jellyfin-config
+docker volume create jellyfin-metadata
+
+# Use in docker run
+docker run -d \
+  --name jellyfin \
+  -v jellyfin-config:/config \
+  -v jellyfin-metadata:/data \
+  -v /mnt/media:/media:ro \
+  jellyfin/jellyfin:10.10.7
+
+# List volumes
+docker volume ls
+
+# Inspect volume
+docker volume inspect jellyfin-config
+
+# Backup volume
+docker run --rm -v jellyfin-config:/data -v $(pwd):/backup alpine tar czf /backup/jellyfin-config.tar.gz -C /data .
+
+# Remove unused volumes
+docker volume prune</code></pre>
+
+                <h3>Bind Mounts</h3>
+                <p>Map a specific host path to container path. Useful for config files you edit directly, or media libraries.</p>
+                <pre><code class="language-bash"># Bind mount syntax: -v /host/path:/container/path
+docker run -d \
+  -v /home/user/jellyfin/config:/config \
+  -v /mnt/media:/media:ro \
+  jellyfin/jellyfin:10.10.7</code></pre>
+
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Named Volumes</th>
+                                <th>Bind Mounts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Portability</td>
+                                <td>High (Docker manages path)</td>
+                                <td>Low (host-dependent path)</td>
+                            </tr>
+                            <tr>
+                                <td>Direct file access</td>
+                                <td>Via container only</td>
+                                <td>Direct on host</td>
+                            </tr>
+                            <tr>
+                                <td>Backup/Restore</td>
+                                <td>Easy with docker commands</td>
+                                <td>Standard file tools</td>
+                            </tr>
+                            <tr>
+                                <td>Best for</td>
+                                <td>App data, databases, configs</td>
+                                <td>Media files, editable configs</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="networks">
+                <h2>Container Networking</h2>
+
+                <h3>Network Drivers</h3>
+                <ul class="feature-list">
+                    <li><strong>bridge</strong> (default) - Containers on same bridge network can communicate by name. Isolated from host network.</li>
+                    <li><strong>host</strong> - Container shares host network stack. No port mapping needed. Less isolation.</li>
+                    <li><strong>macvlan</strong> - Container gets its own MAC/IP on physical network. Appears as separate device.</li>
+                    <li><strong>none</strong> - No networking. Complete isolation.</li>
+                </ul>
+
+                <h3>Custom Bridge Networks (Best Practice)</h3>
+                <pre><code class="language-bash"># Create custom network
+docker network create --driver bridge homelab
+
+# Attach containers to network
+docker run -d --name jellyfin --network homelab jellyfin/jellyfin:10.10.7
+docker run -d --name nginx --network homelab nginx:alpine
+
+# Containers resolve each other by name: http://jellyfin:8096
+docker exec nginx wget -qO- http://jellyfin:8096</code></pre>
+
+                <h3>Port Publishing</h3>
+                <pre><code class="language-bash"># Publish port 8096 on host to 8096 in container
+-p 8096:8096
+
+# Publish on specific interface only
+-p 127.0.0.1:8096:8096
+
+# Publish UDP
+-p 53:53/udp
+
+# Random host port
+-p 8096</code></pre>
+            </section>
+
+            <section id="compose">
+                <h2>Docker Compose for Multi-Container Apps</h2>
+                <p><strong>Docker Compose</strong> defines and runs multi-container applications using a YAML file. The standard for home lab deployments.</p>
+
+                <h3>docker-compose.yml Structure</h3>
+                <pre><code class="language-yaml">version: '3.8'
+
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:10.10.7
+    container_name: jellyfin
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - jellyfin-config:/config
+      - jellyfin-metadata:/data
+      - /mnt/media:/media:ro
+    ports:
+      - "8096:8096"
+    environment:
+      - TZ=America/New_York
+    # Hardware transcoding (Intel Quick Sync)
+    devices:
+      - /dev/dri:/dev/dri
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    restart: unless-stopped
+    networks:
+      - homelab
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/letsencrypt:ro
+    depends_on:
+      - jellyfin
+
+networks:
+  homelab:
+    driver: bridge
+
+volumes:
+  jellyfin-config:
+  jellyfin-metadata:</code></pre>
+
+                <h3>Key Compose Commands</h3>
+                <pre><code class="language-bash"># Start all services (detached)
+docker compose up -d
+
+# View logs (follow)
+docker compose logs -f jellyfin
+
+# Stop all services
+docker compose down
+
+# Stop and remove volumes
+docker compose down -v
+
+# Pull latest images
+docker compose pull
+
+# Recreate with new images
+docker compose up -d --force-recreate
+
+# Validate config
+docker compose config</code></pre>
+
+                <h3>Environment Variables & .env File</h3>
+                <pre><code class="language-bash"># .env file (not committed to git)
+TZ=America/New_York
+JELLYFIN_VERSION=10.10.7
+MEDIA_PATH=/mnt/media</code></pre>
+                <pre><code class="language-yaml">services:
+  jellyfin:
+    image: jellyfin/jellyfin:${JELLYFIN_VERSION}
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${MEDIA_PATH}:/media:ro</code></pre>
+            </section>
+
+            <section id="best-practices">
+                <h2>Best Practices</h2>
+
+                <div class="practices-grid">
+                    <div class="practice-card">
+                        <h3>✅ Use Specific Tags</h3>
+                        <p><code>image: jellyfin/jellyfin:10.10.7</code> not <code>:latest</code>. Predictable, reproducible deployments.</p>
+                    </div>
+                    <div class="practice-card">
+                        <h3>✅ Restart Policies</h3>
+                        <p><code>restart: unless-stopped</code> - Auto-restart on crash, boot, or Docker daemon restart. Not on manual stop.</p>
+                    </div>
+                    <div class="practice-card">
+                        <h3>✅ Non-Root Users</h3>
+                        <p>Run containers as non-root. Use <code>user: "1000:1000"</code> or ensure upstream image uses non-root.</p>
+                    </div>
+                    <div class="practice-card">
+                        <h3>✅ Resource Limits</h3>
+                        <p>Prevent one container from starving others: <code>deploy: resources: limits: memory: 2G</code></p>
+                    </div>
+                    <div class="practice-card">
+                        <h3>✅ Health Checks</h3>
+                        <p>Define health checks so Docker knows if service is actually working, not just running.</p>
+                    </div>
+                    <div class="practice-card">
+                        <h3>✅ Read-Only Root FS</h3>
+                        <p><code>read_only: true</code> + tmpfs for writable dirs. Prevents container filesystem modification.</p>
+                    </div>
+                    <div class="practice-card">
+                        <h3>✅ Secrets Management</h3>
+                        <p>Never hardcode passwords. Use <code>secrets:</code> in Compose or Docker secrets. Or env file (less secure).</p>
+                    </div>
+                    <div class="practice-card">
+                        <h3>✅ Version Control Compose Files</h3>
+                        <p>Keep <code>docker-compose.yml</code> and <code>.env</code> in git. Infrastructure as code.</p>
+                    </div>
+                </div>
+
+                <h3>Complete Production-Ready Example</h3>
+                <pre><code class="language-yaml">version: '3.8'
+
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:10.10.7
+    container_name: jellyfin
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - jellyfin-config:/config
+      - jellyfin-metadata:/data
+      - /mnt/media:/media:ro
+    environment:
+      - TZ=${TZ}
+      - JELLYFIN_PublishedServerUrl=https://jellyfin.example.com
+    devices:
+      - /dev/dri:/dev/dri
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8096/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 1G
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache/jellyfin
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  homelab:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  jellyfin-config:
+  jellyfin-metadata:</code></pre>
+            </section>
+
+            <section id="troubleshooting">
+                <h2>Common Commands & Troubleshooting</h2>
+
+                <h3>Essential Daily Commands</h3>
+                <pre><code class="language-bash"># List running containers
+docker ps
+
+# List all containers (including stopped)
+docker ps -a
+
+# View logs
+docker logs -f jellyfin
+docker logs --tail 100 jellyfin
+
+# Execute command in running container
+docker exec -it jellyfin bash
+
+# View resource usage
+docker stats
+
+# View container processes
+docker top jellyfin
+
+# Inspect container (network, mounts, config)
+docker inspect jellyfin</code></pre>
+
+                <h3>Cleanup Commands</h3>
+                <pre><code class="language-bash"># Remove stopped containers
+docker container prune
+
+# Remove unused images
+docker image prune -a
+
+# Remove unused volumes
+docker volume prune
+
+# Remove unused networks
+docker network prune
+
+# Nuclear option - remove EVERYTHING unused
+docker system prune -a --volumes</code></pre>
+
+                <h3>Common Issues & Fixes</h3>
+                <div class="troubleshooting-grid">
+                    <div class="issue-card">
+                        <h4>Port already in use</h4>
+                        <p><code>Error: port 8096 already allocated</code></p>
+                        <pre><code class="language-bash"># Find what's using the port
+sudo lsof -i :8096
+# Or use different host port
+-p 8097:8096</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Permission denied on volumes</h4>
+                        <p>Container can't read/write bind mount</p>
+                        <pre><code class="language-bash"># Fix ownership on host
+sudo chown -R 1000:1000 /path/to/config
+# Or run container with matching UID/GID
+--user 1000:1000</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Container exits immediately</h4>
+                        <p>Check logs for error</p>
+                        <pre><code class="language-bash">docker logs jellyfin
+# Common: missing config, wrong permissions, port conflict</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Out of disk space</h4>
+                        <p>Docker images/volumes consuming disk</p>
+                        <pre><code class="language-bash">docker system df
+docker system prune -a --volumes</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Network connectivity issues</h4>
+                        <p>Containers can't reach each other</p>
+                        <pre><code class="language-bash"># Verify same network
+docker network inspect homelab
+# Test DNS resolution
+docker exec jellyfin nslookup nginx</code></pre>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Image pull fails</h4>
+                        <p>Registry rate limits or auth required</p>
+                        <pre><code class="language-bash"># Authenticate
+docker login ghcr.io
+# Or use mirror
+# Increase rate limit with authenticated pulls</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="guide-navigation">
+                <a href="../index.html#guides" class="btn btn-secondary">← Back to Guides</a>
+                <a href="jellyfin.html" class="btn btn-primary">Next: Jellyfin Media Server →</a>
+            </nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <path d="M8 17h8M12 17v-5"/>
+                        </svg>
+                        <span>HomeLab Guide</span>
+                    </a>
+                    <p>Free, open-source guides for building your own home lab. No ads, no tracking, just knowledge.</p>
+                </div>
+                <nav class="footer-nav">
+                    <div class="footer-section">
+                        <h4>Guides</h4>
+                        <ul>
+                            <li><a href="basics.html">Home Lab Basics</a></li>
+                            <li><a href="docker.html">Docker Fundamentals</a></li>
+                            <li><a href="jellyfin.html">Jellyfin Server</a></li>
+                            <li><a href="reverse-proxy.html">Reverse Proxy & SSL</a></li>
+                            <li><a href="backup.html">Backup Strategy</a></li>
+                            <li><a href="vpn.html">Remote Access (VPN)</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="jellyfin.html">Jellyfin</a></li>
+                            <li><a href="nextcloud.html">Nextcloud</a></li>
+                            <li><a href="homeassistant.html">Home Assistant</a></li>
+                            <li><a href="portainer.html">Portainer</a></li>
+                            <li><a href="uptime-kuma.html">Uptime Kuma</a></li>
+                            <li><a href="authentik.html">Authentik</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Networking</h4>
+                        <ul>
+                            <li><a href="vlans.html">VLANs & Segmentation</a></li>
+                            <li><a href="dns.html">DNS & Local Domains</a></li>
+                            <li><a href="firewall.html">Firewall Rules</a></li>
+                            <li><a href="security.html">Security Hardening</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>Built with ❤️ for the self-hosting community. <a href="https://github.com" target="_blank" rel="noopener">View on GitHub</a></p>
+                <p class="license">Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>
